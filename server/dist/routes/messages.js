@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.messagesRouter = void 0;
+const express_1 = require("express");
+const MessagesContorller_1 = require("../controllers/MessagesContorller");
+const messagesRouter = (0, express_1.Router)();
+exports.messagesRouter = messagesRouter;
+let messages = new MessagesContorller_1.MessagesController();
+messagesRouter.get('/messages', messages.getAllMessages);
+messagesRouter.post('/messages', messages.addMessage);
