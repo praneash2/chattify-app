@@ -11,6 +11,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessagesController = void 0;
 const MessagesService_1 = require("../services/MessagesService");
+const responseObject_1 = require("../utils/responseObject");
 class MessagesController {
     constructor() {
         this.messageService = new MessagesService_1.MessageService();
@@ -20,23 +21,42 @@ class MessagesController {
     }
     getAllMessages(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            const userId = req.query.userId;
-            let data = yield this.messageService.getAllMessages(userId);
-            res.json(data);
+            try {
+                const fromUserId = req.query.fromUserId;
+                const toUserId = req.query.toUserId;
+                let messgaesSent = yield this.messageService.getAllMessages(fromUserId, toUserId);
+                let messagesReceived = yield this.messageService.getAllMessages(toUserId, fromUserId);
+                let data = { messgaesSent, messagesReceived };
+                (0, responseObject_1.successResponseObject)(res, data, 200, "get all messages successfully");
+            }
+            catch (e) {
+                if (e.message === "user not exists") {
+                    (0, responseObject_1.errorResponseObject)(res, e === null || e === void 0 ? void 0 : e.message, 404, "cannot get the messages");
+                    return;
+                }
+                (0, responseObject_1.errorResponseObject)(res, e === null || e === void 0 ? void 0 : e.message, 500, "cannot get the messages");
+            }
         });
     }
     addMessage(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             var _a;
-            const fromUserId = req.query.fromUserId;
-            const toUserId = req.query.toUserId;
-            const message = (_a = req === null || req === void 0 ? void 0 : req.body) === null || _a === void 0 ? void 0 : _a.message;
-            let data = yield this.messageService.addMessage(fromUserId, toUserId, message);
-            console.log(data);
-            res.json(data);
+            try {
+                const fromUserId = req.query.fromUserId;
+                const toUserId = req.query.toUserId;
+                const message = (_a = req === null || req === void 0 ? void 0 : req.body) === null || _a === void 0 ? void 0 : _a.message;
+                let data = yield this.messageService.addMessage(fromUserId, toUserId, message);
+                (0, responseObject_1.successResponseObject)(res, data, 200, "get all messages successfully");
+            }
+            catch (e) {
+                if (e.message === "user not exists") {
+                    (0, responseObject_1.errorResponseObject)(res, e === null || e === void 0 ? void 0 : e.message, 404, "cannot get the messages");
+                    return;
+                }
+                res.json({ error: JSON.parse(e.message) });
+            }
         });
     }
-    putMessage(req, res) {
-    }
+    putMessage(req, res) { }
 }
 exports.MessagesController = MessagesController;
