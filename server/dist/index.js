@@ -12,11 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.socketInstance = void 0;
 const express_1 = __importDefault(require("express"));
 const node_http_1 = require("node:http");
 const cors_1 = __importDefault(require("cors"));
 const socket_io_1 = require("socket.io");
 const messages_js_1 = require("./routes/messages.js");
+const Socket_js_1 = require("./socket/Socket.js");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
@@ -27,7 +29,11 @@ const io = new socket_io_1.Server(server, {
     }
 });
 app.use("/", messages_js_1.messagesRouter);
+let onlineUsers = new Map(); // userId:socketId
 io.on('connection', (socket) => {
+    var _a;
+    exports.socketInstance = new Socket_js_1.Socket(onlineUsers);
+    const userId = ((_a = socket.handshake.query) === null || _a === void 0 ? void 0 : _a.userId);
     socket.on("send-message", (message, room) => {
         console.log(message);
         socket.to(room).emit("send-message", message, room);
@@ -38,8 +44,12 @@ io.on('connection', (socket) => {
     });
     console.log(socket.id);
     socket.on("disconnect", () => {
-        console.log(socket.id); // undefined
+        exports.socketInstance.removeOnlineUsers(userId);
+        console.log(socket.id, "disconnected");
+        // console.log(onlineUsers);
     });
+    exports.socketInstance.setOnlineUsers(userId, socket);
+    console.log();
 });
 server.listen(5000, () => __awaiter(void 0, void 0, void 0, function* () {
     console.log('server running at http://localhost:5000');

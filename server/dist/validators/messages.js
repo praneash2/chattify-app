@@ -8,4 +8,5 @@ exports.messageSchema = zod_1.z.object({
 exports.getMessageSchema = zod_1.z.object({
     fromUserId: zod_1.z.string().refine((val) => /^\d+$/.test(val), 'Invalid fromUserId'),
     toUserId: zod_1.z.string().refine((val) => /^\d+$/.test(val), 'Invalid toUserId'),
+    socketId: zod_1.z.string()
 });

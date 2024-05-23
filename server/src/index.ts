@@ -2,10 +2,11 @@ import express from "express";
 import { createServer } from 'node:http';
 import cors from "cors";
 import { Server } from 'socket.io';
-import pool from "./db/db.js";
 import { messagesRouter } from "./routes/messages.js";
+import { Socket } from "./socket/Socket.js";
 
 const app=express();
+
 app.use(cors());
 app.use(express.json())
 const server = createServer(app);
@@ -16,8 +17,12 @@ const io = new Server(server, {
   });
 
 app.use("/",messagesRouter);  
-
+export let socketInstance:any;
+let onlineUsers:Map<string, Array<any>> = new Map<string, Array<any>>(); // userId:socketId
 io.on('connection', (socket) => {
+  
+    socketInstance=new Socket(onlineUsers);
+    const userId=(socket.handshake.query?.userId);
     socket.on("send-message",(message,room)=>{
         console.log(message);
         socket.to(room).emit("send-message",message,room);
@@ -28,8 +33,12 @@ io.on('connection', (socket) => {
     });
     console.log(socket.id);
     socket.on("disconnect", () => {
-      console.log(socket.id); // undefined
+      socketInstance.removeOnlineUsers(userId);
+      console.log(socket.id,"disconnected");
+      // console.log(onlineUsers);
     });
+    socketInstance.setOnlineUsers(userId,socket);
+    console.log()
 });
   
 server.listen(5000, async() => {

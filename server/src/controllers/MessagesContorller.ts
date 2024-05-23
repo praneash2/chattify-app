@@ -1,3 +1,4 @@
+import { socketInstance } from "..";
 import { MessageService } from "../services/MessagesService";
 import {
 	errorResponseObject,
@@ -50,13 +51,33 @@ export class MessagesController {
 				toUserId,
 				message
 			);
+            let currentSocketId:string=req.query.socketId;
+            let onlineUsers=socketInstance.getOnlineUsers();
+            console.log(onlineUsers,"onlineUsers")
+            if(onlineUsers.has(toUserId.toString())){
+                let toUserSockets:any[]=onlineUsers.get(toUserId.toString());
+                let fromUserSockets:any[]=onlineUsers.get(fromUserId.toString());
+                let fromSameSocket:any=fromUserSockets.filter((socketId)=>socketId.id===currentSocketId)?.[0];
+                
+                for(let fromUserSocket of fromUserSockets){
+                    if(fromUserSocket.id!==currentSocketId){
+                        socketInstance.sendMessage(fromUserSocket.id,message,fromSameSocket);
+                    }
+                }
+                
+                for(let toUserSocket of toUserSockets){
+                    socketInstance.sendMessage(toUserSocket.id,message,fromSameSocket);
+                }
+                
+            }
 			successResponseObject(res, data, 200, "get all messages successfully");
 		} catch (e: any) {
 			if (e.message === "user not exists") {
 				errorResponseObject(res, e?.message, 404, "cannot get the messages");
 				return;
 			}
-			res.json({ error: JSON.parse(e.message) });
+			console.log(e.message)
+            errorResponseObject(res, e?.message, 404, "cannot get the messages");
 		}
 	}
 	putMessage(req: any, res: any) {}

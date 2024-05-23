@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MessagesController = void 0;
+const __1 = require("..");
 const MessagesService_1 = require("../services/MessagesService");
 const responseObject_1 = require("../utils/responseObject");
 class MessagesController {
@@ -40,12 +41,28 @@ class MessagesController {
     }
     addMessage(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a;
+            var _a, _b;
             try {
                 const fromUserId = req.query.fromUserId;
                 const toUserId = req.query.toUserId;
                 const message = (_a = req === null || req === void 0 ? void 0 : req.body) === null || _a === void 0 ? void 0 : _a.message;
                 let data = yield this.messageService.addMessage(fromUserId, toUserId, message);
+                let currentSocketId = req.query.socketId;
+                let onlineUsers = __1.socketInstance.getOnlineUsers();
+                console.log(onlineUsers, "onlineUsers");
+                if (onlineUsers.has(toUserId.toString())) {
+                    let toUserSockets = onlineUsers.get(toUserId.toString());
+                    let fromUserSockets = onlineUsers.get(fromUserId.toString());
+                    let fromSameSocket = (_b = fromUserSockets.filter((socketId) => socketId.id === currentSocketId)) === null || _b === void 0 ? void 0 : _b[0];
+                    for (let fromUserSocket of fromUserSockets) {
+                        if (fromUserSocket.id !== currentSocketId) {
+                            __1.socketInstance.sendMessage(fromUserSocket.id, message, fromSameSocket);
+                        }
+                    }
+                    for (let toUserSocket of toUserSockets) {
+                        __1.socketInstance.sendMessage(toUserSocket.id, message, fromSameSocket);
+                    }
+                }
                 (0, responseObject_1.successResponseObject)(res, data, 200, "get all messages successfully");
             }
             catch (e) {
@@ -53,7 +70,8 @@ class MessagesController {
                     (0, responseObject_1.errorResponseObject)(res, e === null || e === void 0 ? void 0 : e.message, 404, "cannot get the messages");
                     return;
                 }
-                res.json({ error: JSON.parse(e.message) });
+                console.log(e.message);
+                (0, responseObject_1.errorResponseObject)(res, e === null || e === void 0 ? void 0 : e.message, 404, "cannot get the messages");
             }
         });
     }

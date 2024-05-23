@@ -4,7 +4,11 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { io } from "socket.io-client";
-const socket = io("http://localhost:5000/");
+const socket = io("http://localhost:5000/",{
+  query: {
+    userId: JSON.parse(localStorage.getItem("userId"))
+  }
+});
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>

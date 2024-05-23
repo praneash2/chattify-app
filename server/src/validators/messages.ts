@@ -8,4 +8,5 @@ export type messageSchemaInfer=z.infer<typeof messageSchema>;
 export const getMessageSchema=z.object({
     fromUserId: z.string().refine((val) => /^\d+$/.test(val), 'Invalid fromUserId'),
     toUserId: z.string().refine((val) => /^\d+$/.test(val), 'Invalid toUserId'),
+    socketId: z.string()
 })
