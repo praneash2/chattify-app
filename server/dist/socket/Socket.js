@@ -11,6 +11,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Socket = void 0;
 const socket_io_1 = require("socket.io");
+const redis_1 = require("redis");
+const subscriber = (0, redis_1.createClient)();
+const publisher = (0, redis_1.createClient)();
 class Socket {
     constructor(onlineUsers, server, client) {
         this.onlineUsers = onlineUsers;
@@ -22,38 +25,50 @@ class Socket {
         this.client = client;
     }
     initSocket() {
-        this.io.on('connection', (socket) => {
-            var _a;
-            const userId = ((_a = socket.handshake.query) === null || _a === void 0 ? void 0 : _a.userId);
-            socket.on("send-message", (message, room) => {
-                console.log(message);
-                socket.to(room).emit("send-message", message, room);
+        return __awaiter(this, void 0, void 0, function* () {
+            yield subscriber.connect();
+            yield publisher.connect();
+            subscriber.subscribe("MESSAGES", (message) => {
+                let data = JSON.parse(message);
+                console.log(data, "subs");
+                this.io.to(data.toUserSocketId).emit("send-message", data.message);
             });
-            socket.on("join-group", (room) => {
-                console.log("room", room);
-                socket.join("a");
-            });
-            console.log(socket.id);
-            socket.on("disconnect", () => {
+            this.io.on('connection', (socket) => {
+                var _a;
+                const userId = ((_a = socket.handshake.query) === null || _a === void 0 ? void 0 : _a.userId);
+                socket.on("send-message", (message, room) => {
+                    console.log(message);
+                    socket.to(room).emit("send-message", message, room);
+                });
+                socket.on("join-group", (room) => {
+                    console.log("room", room);
+                    socket.join("a");
+                });
+                console.log(socket.id);
+                socket.on("disconnect", () => {
+                    if (typeof userId === "string") {
+                        this.removeOnlineUsers(userId, socket.id, this.client);
+                        console.log(socket.id, "disconnected");
+                    }
+                });
+                socket.on("page-reload", () => {
+                    if (typeof userId === "string") {
+                        this.removeOnlineUsers(userId, socket.id, this.client);
+                        console.log(socket.id, "disconnected");
+                    }
+                });
                 if (typeof userId === "string") {
-                    this.removeOnlineUsers(userId, socket.id, this.client);
-                    console.log(socket.id, "disconnected");
+                    this.setOnlineUsers(userId, socket.id, this.client);
                 }
+                console.log();
             });
-            socket.on("page-reload", () => {
-                if (typeof userId === "string") {
-                    this.removeOnlineUsers(userId, socket.id, this.client);
-                    console.log(socket.id, "disconnected");
-                }
-            });
-            if (typeof userId === "string") {
-                this.setOnlineUsers(userId, socket.id, this.client);
-            }
-            console.log();
         });
     }
     sendMessage(toUserSocketId, message) {
-        this.io.to(toUserSocketId).emit("send-message", message);
+        return __awaiter(this, void 0, void 0, function* () {
+            let data = { message, toUserSocketId };
+            yield publisher.publish("MESSAGES", JSON.stringify(data));
+        });
     }
     setOnlineUsers(userId, socketId, client) {
         return __awaiter(this, void 0, void 0, function* () {

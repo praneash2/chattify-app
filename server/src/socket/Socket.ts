@@ -1,5 +1,8 @@
 import { RedisClientType } from "@redis/client";
 import { Server } from 'socket.io';
+import { createClient } from 'redis';
+const subscriber =createClient()
+const publisher = createClient()
 export class Socket{
     private onlineUsers:Map<string, Array<any>>;
     private io:Server;
@@ -12,9 +15,17 @@ export class Socket{
             }
           });
           this.client=client;
+          
     }
-    initSocket(){
-        
+    async initSocket(){
+        await subscriber.connect();
+        await publisher.connect();
+        subscriber.subscribe("MESSAGES", (message) => {
+             
+            let data=JSON.parse(message);
+            console.log(data,"subs");
+            this.io.to(data.toUserSocketId).emit("send-message",data.message);
+          });
         this.io.on('connection', (socket) => {
   
             const userId=(socket.handshake.query?.userId);
@@ -45,8 +56,10 @@ export class Socket{
             console.log()
         });
     }
-    sendMessage(toUserSocketId:string,message:string){
-        this.io.to(toUserSocketId).emit("send-message",message);
+    async sendMessage(toUserSocketId:string,message:string){
+        let data={message,toUserSocketId};
+        await publisher.publish("MESSAGES",JSON.stringify(data));
+        
     }
 
     async setOnlineUsers(userId:string,socketId:string,client:RedisClientType){
