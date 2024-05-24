@@ -11,7 +11,7 @@ type Message = {
 	message: object;
 	currentGMTDate: string;
 };
-
+const serialize = require('js-serialize');
 export class MessagesController {
 	messageService: MessageService;
 	constructor() {
@@ -52,21 +52,19 @@ export class MessagesController {
 				message
 			);
             let currentSocketId:string=req.query.socketId;
-            let onlineUsers=socketInstance.getOnlineUsers();
-            console.log(onlineUsers,"onlineUsers")
-            if(onlineUsers.has(toUserId.toString())){
-                let toUserSockets:any[]=onlineUsers.get(toUserId.toString());
-                let fromUserSockets:any[]=onlineUsers.get(fromUserId.toString());
-                let fromSameSocket:any=fromUserSockets.filter((socketId)=>socketId.id===currentSocketId)?.[0];
-                
+            let onlineUsers=await socketInstance.getOnlineUsers();
+            if(onlineUsers.includes(toUserId.toString())){
+                let toUserSockets:any[]=await socketInstance.getUserSocketIds(toUserId.toString());
+                let fromUserSockets:any[]=await socketInstance.getUserSocketIds(fromUserId.toString());
+				
                 for(let fromUserSocket of fromUserSockets){
-                    if(fromUserSocket.id!==currentSocketId){
-                        socketInstance.sendMessage(fromUserSocket.id,message,fromSameSocket);
+                    if(fromUserSocket!==currentSocketId){
+                        socketInstance.sendMessage(fromUserSocket,message);
                     }
                 }
                 
                 for(let toUserSocket of toUserSockets){
-                    socketInstance.sendMessage(toUserSocket.id,message,fromSameSocket);
+                    socketInstance.sendMessage(toUserSocket,message);
                 }
                 
             }

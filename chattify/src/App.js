@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,useEffect} from 'react';
 import './App.css';
 
 function App({socket}) {
@@ -7,7 +7,17 @@ function App({socket}) {
     console.log(socket.id); // x8WIv7-mJelg7on_ALbx
   });
   
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      socket.emit("page-reload");
+    };
 
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
   
   const handleChange=(e)=>{
       setMessage({...message,[e.target.name]:e.target.value});
