@@ -19,6 +19,7 @@
     "pg": "^8.11.5",
     "redis": "^4.6.14",
     "socket.io": "^4.7.5",
+    "ws": "^8.18.0",
     "zod": "^3.23.8"
   },
   "scripts": {
@@ -26,5 +27,8 @@
     "start:js": "nodemon dist/index.js",
     "start": "concurrently npm:start:*",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.5.12"
   }
 }
