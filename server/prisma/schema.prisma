@@ -13,16 +13,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id    Int     @id @default(autoincrement())
-  name  String
-  email String  @unique
-  messages Message[]
+model User {
+  id       Int       @id @default(autoincrement())
+  name     String
+  email    String    @unique
+  messages Message[] @relation("MessagesSent") // Messages sent by the user
+  receivedMessages Message[] @relation("MessagesReceived") // Messages received by the user
 }
 
-model Message{
-  id    Int     @id @default(autoincrement())
-  from  Int
-  to    Int  
-  
+model Message {
+  id     Int  @id @default(autoincrement())
+  from   Int
+  to     Int
+
+  sender   User @relation("MessagesSent", fields: [from], references: [id])
+  receiver User @relation("MessagesReceived", fields: [to], references: [id])
 }
