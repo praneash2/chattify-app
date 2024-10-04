@@ -6,6 +6,7 @@ import { messagesRouter } from "./routes/messages.js";
 import { Socket } from "./socket/Socket.js";
 import { SocketWs } from "./socket/SocketWs.js";
 import { createClient } from 'redis';
+import { friendsRouter } from "./routes/friends.js";
 
 const app=express();
 
@@ -24,7 +25,7 @@ console.log("Redis client connected successfully")
 });
 
 app.use("/",messagesRouter);  
-
+app.use("/friends",friendsRouter);
 let onlineUsers:Map<string, Array<any>> = new Map<string, Array<any>>(); // userId:socketId
 export let socketInstance:any=new Socket(onlineUsers,server,client);
 

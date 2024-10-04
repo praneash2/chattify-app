@@ -14,18 +14,28 @@ datasource db {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  name     String
-  email    String    @unique
-  messages Message[] @relation("MessagesSent") // Messages sent by the user
-  receivedMessages Message[] @relation("MessagesReceived") // Messages received by the user
+  id               Int       @id @default(autoincrement())
+  name             String
+  email            String    @unique
+  messages         Message[] @relation("MessagesSent")
+  receivedMessages Message[] @relation("MessagesReceived")
+  friends          Friend[]  @relation("usersFriend")
 }
 
 model Message {
-  id     Int  @id @default(autoincrement())
-  from   Int
-  to     Int
+  id   Int @id @default(autoincrement())
+  from Int
+  to   Int
 
   sender   User @relation("MessagesSent", fields: [from], references: [id])
   receiver User @relation("MessagesReceived", fields: [to], references: [id])
+}
+
+model Friend {
+  id       Int @id @default(autoincrement())  // Primary key for each friendship record
+  userid   Int // User who initiated the friendship
+  
+
+  user     User @relation("usersFriend", fields: [userid], references: [id])  // Relation to the initiating user
+
 }

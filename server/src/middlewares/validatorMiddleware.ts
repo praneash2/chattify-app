@@ -5,7 +5,7 @@ export const validatorMiddleware=(res:any,schema:any,data:object,next:NextFuncti
     try{
 
         console.log(data)
-        schema.parse(data);
+        // schema.parse(data);
         
         next();
     }
