@@ -17,7 +17,7 @@ class UsersRepository {
             try {
                 const userData = yield this.prisma.user.findUnique({
                     where: {
-                        id: 1,
+                        id: userId,
                     },
                 });
                 return userData;

@@ -1,5 +1,6 @@
 import {Request, Response } from "express";
 import { FriendsService } from "../services/FriendsService.ts/FriendsService";
+import { errorResponseObject, successResponseObject } from "../utils/responseObject";
 
 export class FriendsController{
     protected friendsService:FriendsService;
@@ -13,11 +14,12 @@ export class FriendsController{
 
     addFriend=async (req:Request,res:Response)=>{
         try{
-            const friend=req?.body;
-            await this.friendsService.addFriend(friend);
+            let data=await this.friendsService.addFriend(req?.body);
+            successResponseObject(res,data,200,data.result);
         }
-        catch(e){
-            console.error(e);
+        catch(err:any){
+            console.error(err);
+            errorResponseObject(res,err,500,err.message);
         }
     }
 }

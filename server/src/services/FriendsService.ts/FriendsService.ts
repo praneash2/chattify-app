@@ -1,23 +1,49 @@
 import {Request, Response } from "express";
 import { FriendsRepository } from "../../repositories/FriendsRepository";
+import { UsersRepository } from "../../repositories/UsersRepository";
 interface addFriend{
     userid:number,
+    friendid:number
+}
+
+interface addFriendResult{
+    id?: number;
+    userid?: number;
+    friendid?: number;
+}
+
+interface result{
+    result:string
 }
 
 export class FriendsService{
     
-    private friendRepositoy:FriendsRepository;
+    private friendRepository:FriendsRepository;
+    private usersRepository:UsersRepository;
     constructor(){
-        this.friendRepositoy = new FriendsRepository();
+        this.friendRepository = new FriendsRepository();
+        this.usersRepository =  new UsersRepository();
     }
 
     getAllFriends=(req:Request,res:Response):void=>{
-        this.friendRepositoy.getAllFriends();
+        this.friendRepository.getAllFriends();
         res.send("friends");
     }
 
-    addFriend=async(friend:addFriend)=>{
-        await this.friendRepositoy.addFriend(friend);
+    addFriend=async(data:addFriend):Promise<addFriendResult & result>=>{
+        try {
+            const userExists=await this.usersRepository.getUser(data.userid);
+            const friendExists=await this.usersRepository.getUser(data.friendid);
+            if(!(userExists && friendExists)){
+                return {result:"user not exits"};
+            }
+
+            let friendResult=await this.friendRepository.addFriend(data);
+            return {...friendResult,result:"friend added"};
+            
+        } catch (error) {
+            throw(error)
+        }
     }
 
 }

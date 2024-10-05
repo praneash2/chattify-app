@@ -12,7 +12,6 @@ export class UsersController{
     getUsers=async(req:Request,res:Response)=>{
         try {
             const userId:number=Number(req?.query?.userId);
-            
             let data=await this.usersService.getUser(userId);
             successResponseObject(res,data,200,"fetched user successfully");
         }

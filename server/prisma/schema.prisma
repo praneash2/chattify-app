@@ -20,7 +20,8 @@ model User {
   password         String
   messages         Message[] @relation("MessagesSent")
   receivedMessages Message[] @relation("MessagesReceived")
-  friends          Friend[]  @relation("usersFriend")
+  friendInitiated  Friend[]  @relation("TheUser")
+  friends          Friend[] @relation("UsersFriend") 
 }
 
 model Message {
@@ -35,8 +36,10 @@ model Message {
 model Friend {
   id       Int @id @default(autoincrement())  // Primary key for each friendship record
   userid   Int // User who initiated the friendship
-  
+  friendid Int
 
-  user     User @relation("usersFriend", fields: [userid], references: [id])  // Relation to the initiating user
+  user     User @relation("TheUser", fields: [userid], references: [id])  // Relation to the initiating user
+  frienduser User @relation("UsersFriend",fields:[friendid],references:[id])
 
+  @@unique([userid, friendid])
 }

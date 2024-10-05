@@ -1,7 +1,14 @@
 import {Request, Response } from "express";
-import { Prisma, PrismaClient } from '@prisma/client';
+import {  PrismaClient } from '@prisma/client';
 interface addFriend{
     userid:number,
+    friendid:number
+}
+
+interface addFriendResult{
+        id: number;
+        userid: number;
+        friendid: number;
 }
 
 export class FriendsRepository{
@@ -17,15 +24,17 @@ export class FriendsRepository{
         console.log(value);
     }
 
-     addFriend=async(friend:addFriend)=>{
+     addFriend=async(data:addFriend):Promise<addFriendResult>=>{
         try{
-            await this.prisma.friend.create({
+            const friendResult=await this.prisma.friend.create({
                 data:{
-                    userid:friend.userid
+                    userid:data.userid,
+                    friendid:data.friendid
             }});
+            return friendResult;
         }
-        catch(err:unknown){
-            console.log(err);
+        catch(err){
+            throw(err);
         }
     }
 }

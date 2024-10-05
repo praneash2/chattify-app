@@ -11,16 +11,29 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.FriendsService = void 0;
 const FriendsRepository_1 = require("../../repositories/FriendsRepository");
+const UsersRepository_1 = require("../../repositories/UsersRepository");
 class FriendsService {
     constructor() {
         this.getAllFriends = (req, res) => {
-            this.friendRepositoy.getAllFriends();
+            this.friendRepository.getAllFriends();
             res.send("friends");
         };
-        this.addFriend = (friend) => __awaiter(this, void 0, void 0, function* () {
-            yield this.friendRepositoy.addFriend(friend);
+        this.addFriend = (data) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userExists = yield this.usersRepository.getUser(data.userid);
+                const friendExists = yield this.usersRepository.getUser(data.friendid);
+                if (!(userExists && friendExists)) {
+                    return { result: "user not exits" };
+                }
+                let friendResult = yield this.friendRepository.addFriend(data);
+                return Object.assign(Object.assign({}, friendResult), { result: "friend added" });
+            }
+            catch (error) {
+                throw (error);
+            }
         });
-        this.friendRepositoy = new FriendsRepository_1.FriendsRepository();
+        this.friendRepository = new FriendsRepository_1.FriendsRepository();
+        this.usersRepository = new UsersRepository_1.UsersRepository();
     }
 }
 exports.FriendsService = FriendsService;
