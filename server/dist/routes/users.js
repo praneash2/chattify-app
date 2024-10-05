@@ -11,4 +11,4 @@ const users_1 = require("../validators/users");
 exports.usersRouter = express_1.default.Router();
 const usersController = new UsersController_1.UsersController();
 exports.usersRouter.get('/', (req, res, next) => { (0, validatorMiddleware_1.validatorMiddleware)(res, users_1.getUsersSchema, req === null || req === void 0 ? void 0 : req.query, next); }, usersController.getUsers);
-exports.usersRouter.post('/', (req, res, next) => { (0, validatorMiddleware_1.validatorMiddleware)(res, users_1.getUsersSchema, req === null || req === void 0 ? void 0 : req.body, next); }, usersController.createUser);
+exports.usersRouter.post('/', (req, res, next) => { (0, validatorMiddleware_1.validatorMiddleware)(res, users_1.addUsersSchema, req === null || req === void 0 ? void 0 : req.body, next); }, usersController.createUser);

@@ -23,8 +23,13 @@ export class UsersController{
 
     createUser=async(req:Request,res:Response)=>{
         try {
-            const result=await this.usersService.createUser(req.body)
-            res.send(result);
+            const data=await this.usersService.createUser(req.body)
+            if(data?.result==="Already Exists"){
+                successResponseObject(res,data,200,"User not created");
+            }
+            else{
+                successResponseObject(res,data,200,"Created user successfully");
+            }
         } catch (error) {
             res.send(error);
         }

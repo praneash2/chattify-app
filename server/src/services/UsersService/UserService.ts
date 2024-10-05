@@ -4,6 +4,18 @@ interface User{
     email:string,
     password:string
 }
+
+interface userResult {
+    id?: number;
+    name?: string;
+    email?: string;
+    password?: string;
+}
+
+interface result{
+    result:string
+}
+
 export class UsersService{
     
     private usersRepository:UsersRepository;
@@ -21,10 +33,14 @@ export class UsersService{
     
     }
 
-    createUser=async(user:User)=>{
+    createUser=async(user:User):Promise<userResult&result>=>{
         try {
+            let userResultByEmail=await this.usersRepository.getUserByEmail(user.email);
+            if(userResultByEmail){
+                return {result:"Already Exists"}
+            }
             const data=await this.usersRepository.createUser(user);
-            return data;
+            return {...data,result:"user created"};
         } catch (error) {
             throw(error);
         }

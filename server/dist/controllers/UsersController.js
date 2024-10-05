@@ -27,8 +27,13 @@ class UsersController {
         });
         this.createUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const result = yield this.usersService.createUser(req.body);
-                res.send(result);
+                const data = yield this.usersService.createUser(req.body);
+                if ((data === null || data === void 0 ? void 0 : data.result) === "Already Exists") {
+                    (0, responseObject_1.successResponseObject)(res, data, 200, "User not created");
+                }
+                else {
+                    (0, responseObject_1.successResponseObject)(res, data, 200, "Created user successfully");
+                }
             }
             catch (error) {
                 res.send(error);

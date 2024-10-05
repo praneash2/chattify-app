@@ -20,7 +20,19 @@ class UsersRepository {
                         id: 1,
                     },
                 });
-                console.log(userData);
+                return userData;
+            }
+            catch (error) {
+                throw (error);
+            }
+        });
+        this.getUserByEmail = (userEmail) => __awaiter(this, void 0, void 0, function* () {
+            try {
+                const userData = yield this.prisma.user.findUnique({
+                    where: {
+                        email: userEmail,
+                    },
+                });
                 return userData;
             }
             catch (error) {

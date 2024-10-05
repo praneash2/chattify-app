@@ -24,8 +24,12 @@ class UsersService {
         });
         this.createUser = (user) => __awaiter(this, void 0, void 0, function* () {
             try {
+                let userResultByEmail = yield this.usersRepository.getUserByEmail(user.email);
+                if (userResultByEmail) {
+                    return { result: "Already Exists" };
+                }
                 const data = yield this.usersRepository.createUser(user);
-                return data;
+                return Object.assign(Object.assign({}, data), { result: "user created" });
             }
             catch (error) {
                 throw (error);

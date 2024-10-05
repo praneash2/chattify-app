@@ -30,12 +30,25 @@ export class UsersRepository{
                   id: 1,
                 },
               });
-              console.log(userData);
               return userData;
         } catch (error) {
             throw(error)
         }
           
+    }
+
+
+    getUserByEmail=async(userEmail:string)=>{
+        try {
+            const userData=await this.prisma.user.findUnique({
+                where: {
+                  email: userEmail,
+                },
+              });
+              return userData;
+        } catch (error) {
+            throw(error)
+        }
     }
 
     createUser=async(user:User):Promise<userResult>=>{
