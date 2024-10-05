@@ -1,4 +1,4 @@
-export const successResponseObject=(res:any,data:object|undefined,statusCode:number,message:string)=>{
+export const successResponseObject=(res:any,data:object|undefined|null,statusCode:number,message:string)=>{
     res.status(statusCode).json({data:data,error:{},message:message});
 }
 

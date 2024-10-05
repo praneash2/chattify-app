@@ -1,5 +1,6 @@
 import {Request, Response } from "express";
 import { UsersService } from "../services/UsersService/UserService";
+import { successResponseObject } from "../utils/responseObject";
 
 export class UsersController{
     protected usersService:UsersService;
@@ -12,9 +13,8 @@ export class UsersController{
         try {
             const userId:number=Number(req?.query?.userId);
             
-            let result=await this.usersService.getUser(userId);
-            console.log();
-            res.send(result);
+            let data=await this.usersService.getUser(userId);
+            successResponseObject(res,data,200,"fetched user successfully");
         }
          catch (error) {
             res.send(error);

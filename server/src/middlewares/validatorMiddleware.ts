@@ -4,9 +4,8 @@ import { errorResponseObject } from "../utils/responseObject"
 export const validatorMiddleware=(res:any,schema:any,data:object,next:NextFunction)=>{
     try{
 
-        console.log(data)
-        // schema.parse(data);
-        
+        schema.parse(data);
+      
         next();
     }
     catch(e:any){

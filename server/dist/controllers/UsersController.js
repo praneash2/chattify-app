@@ -11,15 +11,15 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UsersController = void 0;
 const UserService_1 = require("../services/UsersService/UserService");
+const responseObject_1 = require("../utils/responseObject");
 class UsersController {
     constructor() {
         this.getUsers = (req, res) => __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
                 const userId = Number((_a = req === null || req === void 0 ? void 0 : req.query) === null || _a === void 0 ? void 0 : _a.userId);
-                let result = yield this.usersService.getUser(userId);
-                console.log();
-                res.send(result);
+                let data = yield this.usersService.getUser(userId);
+                (0, responseObject_1.successResponseObject)(res, data, 200, "fetched user successfully");
             }
             catch (error) {
                 res.send(error);

@@ -4,8 +4,7 @@ exports.validatorMiddleware = void 0;
 const responseObject_1 = require("../utils/responseObject");
 const validatorMiddleware = (res, schema, data, next) => {
     try {
-        console.log(data);
-        // schema.parse(data);
+        schema.parse(data);
         next();
     }
     catch (e) {
