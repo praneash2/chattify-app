@@ -9,36 +9,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsersRepository = void 0;
-const client_1 = require("@prisma/client");
-class UsersRepository {
+exports.UsersController = void 0;
+const UserService_1 = require("../services/UsersService/UserService");
+class UsersController {
     constructor() {
-        this.getUser = (userId) => __awaiter(this, void 0, void 0, function* () {
+        this.getUsers = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
             try {
-                const userData = yield this.prisma.user.findUnique({
-                    where: {
-                        id: 1,
-                    },
-                });
-                console.log(userData);
-                return userData;
+                const userId = Number((_a = req === null || req === void 0 ? void 0 : req.query) === null || _a === void 0 ? void 0 : _a.userId);
+                let result = yield this.usersService.getUser(userId);
+                console.log();
+                res.send(result);
             }
             catch (error) {
-                throw (error);
+                res.send(error);
             }
         });
-        this.createUser = (user) => __awaiter(this, void 0, void 0, function* () {
+        this.createUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
-                let userResult = yield this.prisma.user.create({
-                    data: user
-                });
-                return userResult;
+                const result = yield this.usersService.createUser(req.body);
+                res.send(result);
             }
             catch (error) {
-                throw (error);
+                res.send(error);
             }
         });
-        this.prisma = new client_1.PrismaClient();
+        this.usersService = new UserService_1.UsersService();
     }
 }
-exports.UsersRepository = UsersRepository;
+exports.UsersController = UsersController;

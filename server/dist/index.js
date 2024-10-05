@@ -16,11 +16,11 @@ exports.socketInstance = void 0;
 const express_1 = __importDefault(require("express"));
 const node_http_1 = require("node:http");
 const cors_1 = __importDefault(require("cors"));
-const messages_js_1 = require("./routes/messages.js");
 const Socket_js_1 = require("./socket/Socket.js");
 const SocketWs_js_1 = require("./socket/SocketWs.js");
 const redis_1 = require("redis");
 const friends_js_1 = require("./routes/friends.js");
+const users_js_1 = require("./routes/users.js");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)());
 app.use(express_1.default.json());
@@ -32,8 +32,8 @@ client.connect().then(() => {
 }).catch((e) => {
     console.log(e);
 });
-app.use("/", messages_js_1.messagesRouter);
 app.use("/friends", friends_js_1.friendsRouter);
+app.use("/users", users_js_1.usersRouter);
 let onlineUsers = new Map(); // userId:socketId
 exports.socketInstance = new Socket_js_1.Socket(onlineUsers, server, client);
 const wsInstance = new SocketWs_js_1.SocketWs(server);

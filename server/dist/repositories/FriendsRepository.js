@@ -18,11 +18,16 @@ class FriendsRepository {
             console.log(value);
         });
         this.addFriend = (friend) => __awaiter(this, void 0, void 0, function* () {
-            yield this.prisma.friend.create({
-                data: {
-                    userid: friend.userid
-                }
-            });
+            try {
+                yield this.prisma.friend.create({
+                    data: {
+                        userid: friend.userid
+                    }
+                });
+            }
+            catch (err) {
+                console.log(err);
+            }
         });
         this.prisma = new client_1.PrismaClient();
     }

@@ -9,19 +9,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UsersRepository = void 0;
-const client_1 = require("@prisma/client");
-class UsersRepository {
+exports.UsersService = void 0;
+const UsersRepository_1 = require("../../repositories/UsersRepository");
+class UsersService {
     constructor() {
         this.getUser = (userId) => __awaiter(this, void 0, void 0, function* () {
             try {
-                const userData = yield this.prisma.user.findUnique({
-                    where: {
-                        id: 1,
-                    },
-                });
-                console.log(userData);
-                return userData;
+                const data = yield this.usersRepository.getUser(userId);
+                return data;
             }
             catch (error) {
                 throw (error);
@@ -29,16 +24,14 @@ class UsersRepository {
         });
         this.createUser = (user) => __awaiter(this, void 0, void 0, function* () {
             try {
-                let userResult = yield this.prisma.user.create({
-                    data: user
-                });
-                return userResult;
+                const data = yield this.usersRepository.createUser(user);
+                return data;
             }
             catch (error) {
                 throw (error);
             }
         });
-        this.prisma = new client_1.PrismaClient();
+        this.usersRepository = new UsersRepository_1.UsersRepository();
     }
 }
-exports.UsersRepository = UsersRepository;
+exports.UsersService = UsersService;

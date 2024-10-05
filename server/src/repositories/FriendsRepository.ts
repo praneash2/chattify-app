@@ -18,9 +18,14 @@ export class FriendsRepository{
     }
 
      addFriend=async(friend:addFriend)=>{
-        await this.prisma.friend.create({
-            data:{
-                userid:friend.userid
-        }});
+        try{
+            await this.prisma.friend.create({
+                data:{
+                    userid:friend.userid
+            }});
+        }
+        catch(err:unknown){
+            console.log(err);
+        }
     }
 }
