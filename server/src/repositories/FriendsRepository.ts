@@ -19,9 +19,13 @@ export class FriendsRepository{
         this.prisma=new PrismaClient();
     }
 
-     getAllFriends=async()=>{
-        const value=await this.prisma.user.findMany(); 
-        console.log(value);
+     getAllFriends=async(userid:number):Promise<addFriendResult[]>=>{
+        const friendsResult=await this.prisma.friend.findMany({
+            where:{
+                userid:userid
+            }
+        }); 
+        return friendsResult;
     }
 
     getAlreadyExistingFriend=async(data:addFriend):Promise<addFriendResult|null>=>{

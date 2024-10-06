@@ -1,4 +1,3 @@
-import {Request, Response } from "express";
 import { FriendsRepository } from "../../repositories/FriendsRepository";
 import { UsersRepository } from "../../repositories/UsersRepository";
 interface addFriend{
@@ -10,6 +9,11 @@ interface addFriendResult{
     id?: number;
     userid?: number;
     friendid?: number;
+}
+
+interface getAllFriendsResult{
+    friends?:addFriendResult[]
+    result:string
 }
 
 interface result{
@@ -25,9 +29,14 @@ export class FriendsService{
         this.usersRepository =  new UsersRepository();
     }
 
-    getAllFriends=(req:Request,res:Response):void=>{
-        this.friendRepository.getAllFriends();
-        res.send("friends");
+    getAllFriends=async (userid:number):Promise<getAllFriendsResult>=>{
+        const userExists=await this.usersRepository.getUser(userid);
+        if(!userExists){
+            return {result:"user not exists"}
+        }
+        const data=await this.friendRepository.getAllFriends(userid);
+
+        return {...data,result:"friends fetched successfullt"};
     }
 
     addFriend=async(data:addFriend):Promise<addFriendResult & result>=>{

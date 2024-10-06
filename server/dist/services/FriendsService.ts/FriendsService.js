@@ -14,10 +14,14 @@ const FriendsRepository_1 = require("../../repositories/FriendsRepository");
 const UsersRepository_1 = require("../../repositories/UsersRepository");
 class FriendsService {
     constructor() {
-        this.getAllFriends = (req, res) => {
-            this.friendRepository.getAllFriends();
-            res.send("friends");
-        };
+        this.getAllFriends = (userid) => __awaiter(this, void 0, void 0, function* () {
+            const userExists = yield this.usersRepository.getUser(userid);
+            if (!userExists) {
+                return { result: "user not exists" };
+            }
+            const data = yield this.friendRepository.getAllFriends(userid);
+            return Object.assign(Object.assign({}, data), { result: "friends fetched successfullt" });
+        });
         this.addFriend = (data) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const userExists = yield this.usersRepository.getUser(data.userid);

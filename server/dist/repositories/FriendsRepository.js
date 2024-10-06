@@ -13,9 +13,13 @@ exports.FriendsRepository = void 0;
 const client_1 = require("@prisma/client");
 class FriendsRepository {
     constructor() {
-        this.getAllFriends = () => __awaiter(this, void 0, void 0, function* () {
-            const value = yield this.prisma.user.findMany();
-            console.log(value);
+        this.getAllFriends = (userid) => __awaiter(this, void 0, void 0, function* () {
+            const friendsResult = yield this.prisma.friend.findMany({
+                where: {
+                    userid: userid
+                }
+            });
+            return friendsResult;
         });
         this.getAlreadyExistingFriend = (data) => __awaiter(this, void 0, void 0, function* () {
             const friendResult = yield this.prisma.friend.findFirst({

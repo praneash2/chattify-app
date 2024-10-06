@@ -7,9 +7,15 @@ export class FriendsController{
     constructor(){
         this.friendsService=new FriendsService();
     }
-    getAllFriends=(req:Request,res:Response)=>{
-        
-        res.send("friends");
+    getAllFriends=async (req:Request,res:Response)=>{
+        try {
+            
+            let userid=Number(req?.query?.userid);
+            let data=await this.friendsService.getAllFriends(userid);
+            successResponseObject(res,data,200,"friends fetched successfully");
+        } catch (error:any) {
+            errorResponseObject(res,error,500,error.message);
+        }
     }
 
     addFriend=async (req:Request,res:Response)=>{

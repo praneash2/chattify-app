@@ -14,9 +14,17 @@ const FriendsService_1 = require("../services/FriendsService.ts/FriendsService")
 const responseObject_1 = require("../utils/responseObject");
 class FriendsController {
     constructor() {
-        this.getAllFriends = (req, res) => {
-            res.send("friends");
-        };
+        this.getAllFriends = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            var _a;
+            try {
+                let userid = Number((_a = req === null || req === void 0 ? void 0 : req.query) === null || _a === void 0 ? void 0 : _a.userid);
+                let data = yield this.friendsService.getAllFriends(userid);
+                (0, responseObject_1.successResponseObject)(res, data, 200, "friends fetched successfully");
+            }
+            catch (error) {
+                (0, responseObject_1.errorResponseObject)(res, error, 500, error.message);
+            }
+        });
         this.addFriend = (req, res) => __awaiter(this, void 0, void 0, function* () {
             try {
                 let data = yield this.friendsService.addFriend(req === null || req === void 0 ? void 0 : req.body);
