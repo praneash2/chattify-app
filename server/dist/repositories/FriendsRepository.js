@@ -17,6 +17,15 @@ class FriendsRepository {
             const value = yield this.prisma.user.findMany();
             console.log(value);
         });
+        this.getAlreadyExistingFriend = (data) => __awaiter(this, void 0, void 0, function* () {
+            const friendResult = yield this.prisma.friend.findFirst({
+                where: {
+                    userid: data.userid,
+                    friendid: data.friendid
+                }
+            });
+            return friendResult;
+        });
         this.addFriend = (data) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const friendResult = yield this.prisma.friend.create({

@@ -34,10 +34,16 @@ export class FriendsService{
         try {
             const userExists=await this.usersRepository.getUser(data.userid);
             const friendExists=await this.usersRepository.getUser(data.friendid);
+            console.log("e");
             if(!(userExists && friendExists)){
                 return {result:"user not exits"};
             }
 
+            const alreadyExistingFriend= await this.friendRepository.getAlreadyExistingFriend(data);
+            
+            if(alreadyExistingFriend){
+                return {result:"already a friend"}    
+            }
             let friendResult=await this.friendRepository.addFriend(data);
             return {...friendResult,result:"friend added"};
             

@@ -18,7 +18,6 @@ export class FriendsController{
             successResponseObject(res,data,200,data.result);
         }
         catch(err:any){
-            console.error(err);
             errorResponseObject(res,err,500,err.message);
         }
     }

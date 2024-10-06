@@ -23,7 +23,6 @@ class FriendsController {
                 (0, responseObject_1.successResponseObject)(res, data, 200, data.result);
             }
             catch (err) {
-                console.error(err);
                 (0, responseObject_1.errorResponseObject)(res, err, 500, err.message);
             }
         });

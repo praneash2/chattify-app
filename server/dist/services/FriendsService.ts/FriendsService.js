@@ -22,8 +22,13 @@ class FriendsService {
             try {
                 const userExists = yield this.usersRepository.getUser(data.userid);
                 const friendExists = yield this.usersRepository.getUser(data.friendid);
+                console.log("e");
                 if (!(userExists && friendExists)) {
                     return { result: "user not exits" };
+                }
+                const alreadyExistingFriend = yield this.friendRepository.getAlreadyExistingFriend(data);
+                if (alreadyExistingFriend) {
+                    return { result: "already a friend" };
                 }
                 let friendResult = yield this.friendRepository.addFriend(data);
                 return Object.assign(Object.assign({}, friendResult), { result: "friend added" });

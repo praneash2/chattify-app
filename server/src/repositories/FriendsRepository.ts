@@ -24,7 +24,18 @@ export class FriendsRepository{
         console.log(value);
     }
 
-     addFriend=async(data:addFriend):Promise<addFriendResult>=>{
+    getAlreadyExistingFriend=async(data:addFriend):Promise<addFriendResult|null>=>{
+        const friendResult=await this.prisma.friend.findFirst({
+            where:{
+                userid:data.userid,
+                friendid:data.friendid
+            }
+        }
+        )
+        return friendResult;
+    }
+    
+    addFriend=async(data:addFriend):Promise<addFriendResult>=>{
         try{
             const friendResult=await this.prisma.friend.create({
                 data:{
