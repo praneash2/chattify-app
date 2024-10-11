@@ -12,11 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.socketInstance = void 0;
 const express_1 = __importDefault(require("express"));
 const node_http_1 = require("node:http");
 const cors_1 = __importDefault(require("cors"));
-const Socket_js_1 = require("./socket/Socket.js");
 const SocketWs_js_1 = require("./socket/SocketWs.js");
 const redis_1 = require("redis");
 const friends_js_1 = require("./routes/friends.js");
@@ -35,11 +33,9 @@ client.connect().then(() => {
 app.use("/friends", friends_js_1.friendsRouter);
 app.use("/users", users_js_1.usersRouter);
 let onlineUsers = new Map(); // userId:socketId
-exports.socketInstance = new Socket_js_1.Socket(onlineUsers, server, client);
 const wsInstance = new SocketWs_js_1.SocketWs(server);
 server.listen(5000, () => __awaiter(void 0, void 0, void 0, function* () {
     console.log('server running at http://localhost:5000');
     wsInstance.init();
     wsInstance.initSubscriber();
-    exports.socketInstance.initSocket();
 }));
