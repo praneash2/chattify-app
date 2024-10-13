@@ -1,16 +1,37 @@
+"use client"
+import { getAllFriends } from '@/api/friends';
 import { currentUserAtom } from '@/recoil/atoms/currentUserAtom';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useRecoilState } from 'recoil';
 
+interface friend{
+    userId:number;
+    friendId:number;
+    friendName:string;
+}
+
+
+
 export default function FriendsList() {
-    const [friendsList,setFriendsList] = useState([{name:"praneash",userId:1},{name:"kumar",userId:2}]);
+    const [friendsList,setFriendsList] = useState<friend[]>([]);
     const [toUserId,setToUserId] = useRecoilState(currentUserAtom);
     
+    useEffect(()=>{
+        (async()=>{
+            // console.log(toUserId);
+            const friend=await getAllFriends(toUserId);
+            if(friend){
+                setFriendsList(friend);
+            }
+        })();
+        
+    },[]);
+
     const selectFriend=(e:React.MouseEvent<HTMLDivElement>)=>{
         const target = e.target as HTMLButtonElement;
         const value = target.getAttribute('data-user-id');
         if(value && value!=='' ){
-            setToUserId(value);
+            setToUserId(Number(value));
         }
     }
 
@@ -20,7 +41,7 @@ export default function FriendsList() {
             <div>
                 {
                     friendsList.map((friend,index)=>(
-                        <div key={index} data-user-id={friend.userId} onClick={selectFriend} >{friend.name}</div>
+                        <div className={(friend.friendId===toUserId)?'bg-slate-50':''} key={index} data-user-id={friend.friendId} onClick={selectFriend} >{friend.friendName}</div>
                     ))
                 }
             </div>
