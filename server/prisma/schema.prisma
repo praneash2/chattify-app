@@ -28,9 +28,11 @@ model Message {
   id   Int @id @default(autoincrement())
   from Int
   to   Int
-
+  message String
   sender   User @relation("MessagesSent", fields: [from], references: [id])
   receiver User @relation("MessagesReceived", fields: [to], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Friend {

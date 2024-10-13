@@ -1,6 +1,6 @@
 import {Request, Response } from "express";
 import { UsersService } from "../services/UsersService/UserService";
-import { successResponseObject } from "../utils/responseObject";
+import { errorResponseObject, successResponseObject } from "../utils/responseObject";
 
 export class UsersController{
     protected usersService:UsersService;
@@ -13,10 +13,10 @@ export class UsersController{
         try {
             const userId:number=Number(req?.query?.userId);
             let data=await this.usersService.getUser(userId);
-            successResponseObject(res,data,200,"fetched user successfully");
+            successResponseObject(res,data,200,"fetched messages successfully");
         }
-         catch (error) {
-            res.send(error);
+        catch (error:any) {
+            errorResponseObject(res,error,500,error.message);
         }
     }
 
@@ -29,8 +29,8 @@ export class UsersController{
             else{
                 successResponseObject(res,data,200,"Created user successfully");
             }
-        } catch (error) {
-            res.send(error);
+        } catch (error:any) {
+            errorResponseObject(res,error,500,error.message);
         }
     }
 }

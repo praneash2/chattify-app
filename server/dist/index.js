@@ -20,6 +20,7 @@ const redis_1 = require("redis");
 const friends_js_1 = require("./routes/friends.js");
 const users_js_1 = require("./routes/users.js");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const messages_js_1 = require("./routes/messages.js");
 const app = (0, express_1.default)();
 app.use((0, cors_1.default)({
     origin: 'http://localhost:3000',
@@ -37,6 +38,7 @@ client.connect().then(() => {
 });
 app.use("/friends", friends_js_1.friendsRouter);
 app.use("/users", users_js_1.usersRouter);
+app.use("/message", messages_js_1.messagesRouter);
 let onlineUsers = new Map(); // userId:socketId
 const wsInstance = new SocketWs_js_1.SocketWs(server);
 server.listen(5000, () => __awaiter(void 0, void 0, void 0, function* () {

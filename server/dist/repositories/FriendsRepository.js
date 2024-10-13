@@ -14,47 +14,57 @@ const client_1 = require("@prisma/client");
 class FriendsRepository {
     constructor() {
         this.getAllFriends = (userid) => __awaiter(this, void 0, void 0, function* () {
-            const friendsResult = yield this.prisma.friend.findMany({
-                where: {
-                    userid: userid
-                },
-                select: {
-                    userid: true,
-                    friendid: true,
-                    frienduser: {
-                        select: {
-                            name: true,
+            try {
+                const friendsResult = yield this.prisma.friend.findMany({
+                    where: {
+                        userid: userid,
+                    },
+                    select: {
+                        userid: true,
+                        friendid: true,
+                        frienduser: {
+                            select: {
+                                name: true,
+                            },
                         },
                     },
-                }
-            });
-            return friendsResult.map(({ userid, friendid, frienduser }) => ({
-                userId: userid,
-                friendId: friendid,
-                friendName: frienduser.name,
-            }));
+                });
+                return friendsResult.map(({ userid, friendid, frienduser }) => ({
+                    userId: userid,
+                    friendId: friendid,
+                    friendName: frienduser.name,
+                }));
+            }
+            catch (error) {
+                throw error;
+            }
         });
         this.getAlreadyExistingFriend = (data) => __awaiter(this, void 0, void 0, function* () {
-            const friendResult = yield this.prisma.friend.findFirst({
-                where: {
-                    userid: data.userid,
-                    friendid: data.friendid
-                }
-            });
-            return friendResult;
+            try {
+                const friendResult = yield this.prisma.friend.findFirst({
+                    where: {
+                        userid: data.userid,
+                        friendid: data.friendid,
+                    },
+                });
+                return friendResult;
+            }
+            catch (error) {
+                throw error;
+            }
         });
         this.addFriend = (data) => __awaiter(this, void 0, void 0, function* () {
             try {
                 const friendResult = yield this.prisma.friend.create({
                     data: {
                         userid: data.userid,
-                        friendid: data.friendid
-                    }
+                        friendid: data.friendid,
+                    },
                 });
                 return friendResult;
             }
             catch (err) {
-                throw (err);
+                throw err;
             }
         });
         this.prisma = new client_1.PrismaClient();

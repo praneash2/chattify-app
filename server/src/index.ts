@@ -7,6 +7,7 @@ import { createClient } from 'redis';
 import { friendsRouter } from "./routes/friends.js";
 import { usersRouter } from "./routes/users.js";
 import cookieParser  from 'cookie-parser';
+import { messagesRouter } from "./routes/messages.js";
 const app=express();
 
 app.use(cors({
@@ -30,6 +31,7 @@ console.log("Redis client connected successfully")
 
 app.use("/friends",friendsRouter);
 app.use("/users",usersRouter);
+app.use("/message",messagesRouter);
 let onlineUsers:Map<string, Array<any>> = new Map<string, Array<any>>(); // userId:socketId
 
 

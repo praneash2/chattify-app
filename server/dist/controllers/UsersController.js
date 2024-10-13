@@ -19,10 +19,10 @@ class UsersController {
             try {
                 const userId = Number((_a = req === null || req === void 0 ? void 0 : req.query) === null || _a === void 0 ? void 0 : _a.userId);
                 let data = yield this.usersService.getUser(userId);
-                (0, responseObject_1.successResponseObject)(res, data, 200, "fetched user successfully");
+                (0, responseObject_1.successResponseObject)(res, data, 200, "fetched messages successfully");
             }
             catch (error) {
-                res.send(error);
+                (0, responseObject_1.errorResponseObject)(res, error, 500, error.message);
             }
         });
         this.createUser = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -36,7 +36,7 @@ class UsersController {
                 }
             }
             catch (error) {
-                res.send(error);
+                (0, responseObject_1.errorResponseObject)(res, error, 500, error.message);
             }
         });
         this.usersService = new UserService_1.UsersService();
