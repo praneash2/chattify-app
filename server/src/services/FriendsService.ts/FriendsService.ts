@@ -11,8 +11,14 @@ interface addFriendResult{
     friendid?: number;
 }
 
+interface getAllFriend{
+    userId: number; 
+    friendId: number;
+    friendName: string;
+}
+
 interface getAllFriendsResult{
-    friends?:addFriendResult[]
+    friends?:getAllFriend[]
     result:string
 }
 

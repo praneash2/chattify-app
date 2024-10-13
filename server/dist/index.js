@@ -19,9 +19,14 @@ const SocketWs_js_1 = require("./socket/SocketWs.js");
 const redis_1 = require("redis");
 const friends_js_1 = require("./routes/friends.js");
 const users_js_1 = require("./routes/users.js");
+const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({
+    origin: 'http://localhost:3000',
+    credentials: true,
+}));
 app.use(express_1.default.json());
+app.use((0, cookie_parser_1.default)());
 const server = (0, node_http_1.createServer)(app);
 const client = (0, redis_1.createClient)();
 client.on('error', err => console.log('Redis Client Error', err));

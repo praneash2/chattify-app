@@ -10,7 +10,7 @@ export class FriendsController{
     getAllFriends=async (req:Request,res:Response)=>{
         try {
             
-            let userid=Number(req?.query?.userid);
+            let userid=Number(req?.cookies?.userid);
             let data=await this.friendsService.getAllFriends(userid);
             successResponseObject(res,data,200,"friends fetched successfully");
         } catch (error:any) {

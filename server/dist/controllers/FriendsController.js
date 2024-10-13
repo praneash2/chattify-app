@@ -17,7 +17,7 @@ class FriendsController {
         this.getAllFriends = (req, res) => __awaiter(this, void 0, void 0, function* () {
             var _a;
             try {
-                let userid = Number((_a = req === null || req === void 0 ? void 0 : req.query) === null || _a === void 0 ? void 0 : _a.userid);
+                let userid = Number((_a = req === null || req === void 0 ? void 0 : req.cookies) === null || _a === void 0 ? void 0 : _a.userid);
                 let data = yield this.friendsService.getAllFriends(userid);
                 (0, responseObject_1.successResponseObject)(res, data, 200, "friends fetched successfully");
             }

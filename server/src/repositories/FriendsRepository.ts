@@ -11,6 +11,12 @@ interface addFriendResult{
         friendid: number;
 }
 
+interface getAllFriendsResult{
+        userId: number; 
+        friendId: number;
+        friendName: string;
+}
+
 export class FriendsRepository{
 
     private prisma:PrismaClient;
@@ -19,13 +25,26 @@ export class FriendsRepository{
         this.prisma=new PrismaClient();
     }
 
-     getAllFriends=async(userid:number):Promise<addFriendResult[]>=>{
+     getAllFriends=async(userid:number):Promise<getAllFriendsResult[]>=>{
         const friendsResult=await this.prisma.friend.findMany({
             where:{
                 userid:userid
+            },
+            select: {
+                userid:true, 
+                friendid: true,
+                frienduser: {
+                  select: {
+                    name: true,
+                  },
+                },
             }
         }); 
-        return friendsResult;
+        return friendsResult.map(({ userid,friendid, frienduser }) => ({
+            userId: userid,
+            friendId: friendid,
+            friendName: frienduser.name,
+          }));
     }
 
     getAlreadyExistingFriend=async(data:addFriend):Promise<addFriendResult|null>=>{

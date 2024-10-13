@@ -6,11 +6,15 @@ import { SocketWs } from "./socket/SocketWs.js";
 import { createClient } from 'redis';
 import { friendsRouter } from "./routes/friends.js";
 import { usersRouter } from "./routes/users.js";
-
+import cookieParser  from 'cookie-parser';
 const app=express();
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+}));
 app.use(express.json())
+app.use(cookieParser())
 const server = createServer(app);
 
 const client = createClient();

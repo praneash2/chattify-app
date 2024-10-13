@@ -17,9 +17,22 @@ class FriendsRepository {
             const friendsResult = yield this.prisma.friend.findMany({
                 where: {
                     userid: userid
+                },
+                select: {
+                    userid: true,
+                    friendid: true,
+                    frienduser: {
+                        select: {
+                            name: true,
+                        },
+                    },
                 }
             });
-            return friendsResult;
+            return friendsResult.map(({ userid, friendid, frienduser }) => ({
+                userId: userid,
+                friendId: friendid,
+                friendName: frienduser.name,
+            }));
         });
         this.getAlreadyExistingFriend = (data) => __awaiter(this, void 0, void 0, function* () {
             const friendResult = yield this.prisma.friend.findFirst({
