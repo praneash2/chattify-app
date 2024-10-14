@@ -8,8 +8,7 @@ interface Message{
 }
 
 interface getMessagesResult{
-    sentMessages?: Message[]; 
-    receivedMessages?:Message[];
+    messages?: Message[]; 
     result: string;
 } 
 
@@ -33,7 +32,7 @@ export class MessagesService{
                 const sentMessages=await this.messagesRepository.getMessages(fromUserId,toUserId);
                 const receivedMessages=await this.messagesRepository.getMessages(toUserId,fromUserId);
             
-                return {sentMessages,receivedMessages,result:"messages fetched successfully"};
+                return {messages:[...sentMessages,...receivedMessages],result:"messages fetched successfully"};
             }
             return validUsers;
             

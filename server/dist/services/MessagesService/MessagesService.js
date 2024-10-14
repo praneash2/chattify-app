@@ -20,7 +20,7 @@ class MessagesService {
                 if (validUsers.result === "") {
                     const sentMessages = yield this.messagesRepository.getMessages(fromUserId, toUserId);
                     const receivedMessages = yield this.messagesRepository.getMessages(toUserId, fromUserId);
-                    return { sentMessages, receivedMessages, result: "messages fetched successfully" };
+                    return { messages: [...sentMessages, ...receivedMessages], result: "messages fetched successfully" };
                 }
                 return validUsers;
             }
