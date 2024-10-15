@@ -1,11 +1,12 @@
 "use client"
 import { socketAtom } from '@/recoil/atoms/socketAtom';
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { currentUserAtom } from '@/recoil/atoms/currentUserAtom';
 import FriendsList from '../FriendsList/FriendsList';
 import { CookieValueTypes, getCookie } from 'cookies-next';
 import { getAllMessages, sendMessagePost } from '@/api/messages';
+import Navbar from '../Navbar/Navbar';
 
 interface Message{
     from:number;
@@ -17,6 +18,7 @@ export default function MessageBox() {
     const socket =useRecoilValue(socketAtom);
     const [inputMessage,setInputMessage] = useState("");
     const toUserId = useRecoilValue(currentUserAtom);
+    const scrollElement =useRef<HTMLDivElement>(null);
     const [messages,setMessages]= useState<Message[]>([
         {from:1,
             to:2,
@@ -47,9 +49,14 @@ export default function MessageBox() {
             socket.onerror = (error) => {
                 console.error("WebSocket error:", error);
             };
-          
+            
+            if (scrollElement.current ) {
+                scrollElement.current.scrollTop = scrollElement.current.scrollHeight;
+              }
         }
     );
+
+    
 
     useEffect(()=>{
         setMessages([]);
@@ -89,17 +96,18 @@ export default function MessageBox() {
     }
     return (
         <div className='flex flex-row'>
+            <Navbar></Navbar>
             <FriendsList></FriendsList>
-            <div>
-                <div className=' flex p-10 flex-col h-[90vh] bg-slate-950 w-[60vw]'>
+            <div className='h-[100vh]'>
+                <div ref={scrollElement} className=' flex p-10 flex-col h-[95vh] bg-slate-950 w-[80vw] overflow-y-scroll'>
                     {messages.map((message,index)=>(
                         (message.from===Number(currentUserId))?<div key={index} className='self-end'>{message.message}</div>:<div key={index} className='self-start'>{message.message}</div>
                     ))
                     }
                 </div>
-                <div className='flex'>
+                <div className='flex h-[5vh]'>
                     <input className='w-[100%]' onChange={handleChange} value={inputMessage}></input>
-                <button onClick={sendMessage}>send</button>
+                <button  onClick={sendMessage}>send</button>
                 </div>
             </div>
         </div>

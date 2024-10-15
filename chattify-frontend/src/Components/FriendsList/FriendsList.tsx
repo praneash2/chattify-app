@@ -36,7 +36,7 @@ export default function FriendsList() {
     }
 
     return (
-        <div>
+        <div className='w-[15vw]'>
             FriendsList
             <div>
                 {
