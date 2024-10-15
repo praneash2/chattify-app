@@ -36,12 +36,12 @@ export default function FriendsList() {
     }
 
     return (
-        <div className='w-[15vw]'>
-            <h6>messages</h6>
+        <div className='flex flex-col gap-2 w-[15vw]'>
+            <h6 className='border-[1px] border-x-[0] border-gray-200 p-[10px]'>messages</h6>
             <div>
                 {
                     friendsList.map((friend,index)=>(
-                        <div className={(friend.friendId===toUserId)?'bg-slate-50':''} key={index} data-user-id={friend.friendId} onClick={selectFriend} >{friend.friendName}</div>
+                        <div className={(friend.friendId===toUserId)?'bg-slate-50 p-[10px]':'p-[10px]'} key={index} data-user-id={friend.friendId} onClick={selectFriend} >{friend.friendName}</div>
                     ))
                 }
             </div>

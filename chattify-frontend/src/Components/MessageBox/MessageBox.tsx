@@ -88,19 +88,19 @@ export default function MessageBox() {
         setInputMessage(e.target.value);
     }
     return (
-        <div className='flex flex-row'>
+        <div className='flex'>
             <Navbar></Navbar>
             <FriendsList></FriendsList>
-            <div className='h-[100vh]'>
-                <div ref={scrollElement} className=' flex p-10 flex-col h-[95vh] bg-slate-950 w-[80vw] overflow-y-scroll'>
+            <div className='h-[100vh] w-[80vw]'>
+                <div ref={scrollElement} className=' flex p-10 flex-col gap-2 h-[95vh] border-[1px] border-gray-200 rounded-lg overflow-y-scroll'>
                     {messages.map((message,index)=>(
-                        (message.from===Number(currentUserId))?<div key={index} className='self-end'>{message.message}</div>:<div key={index} className='self-start'>{message.message}</div>
+                        (message.from===Number(currentUserId))?<div key={index} className='self-end px-4 py-1 bg-violet-600 rounded-md'>{message.message}</div>:<div key={index} className='self-start px-4 py-1 bg-slate-100 rounded-md'>{message.message}</div>
                     ))
                     }
                 </div>
                 <div className='flex h-[5vh]'>
-                    <input className='w-[100%]' onChange={handleChange} value={inputMessage}></input>
-                <button  onClick={sendMessage}>send</button>
+                    <input className='w-[100%] px-4 bg-slate-100 rounded-lg' placeholder='Type your message here' onChange={handleChange} value={inputMessage}></input>
+                    <button  onClick={sendMessage}>send</button>
                 </div>
             </div>
         </div>
