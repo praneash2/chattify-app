@@ -19,14 +19,7 @@ export default function MessageBox() {
     const [inputMessage,setInputMessage] = useState("");
     const toUserId = useRecoilValue(currentUserAtom);
     const scrollElement =useRef<HTMLDivElement>(null);
-    const [messages,setMessages]= useState<Message[]>([
-        {from:1,
-            to:2,
-        message:"hi"},
-        {from:2,
-            to:1,
-            message:"hi there"}
-    ]);
+    const [messages,setMessages]= useState<Message[]>([]);
     const [currentUserId,setCurrentUserId]=useState<CookieValueTypes>(getCookie('userid'));
    
     useEffect(

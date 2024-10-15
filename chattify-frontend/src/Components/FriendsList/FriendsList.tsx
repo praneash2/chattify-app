@@ -37,7 +37,7 @@ export default function FriendsList() {
 
     return (
         <div className='w-[15vw]'>
-            FriendsList
+            <h6>messages</h6>
             <div>
                 {
                     friendsList.map((friend,index)=>(
