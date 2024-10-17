@@ -1,6 +1,6 @@
 import { Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
-import { wsMessageSchema } from "../validators/message";
+import { wsMessageSchema, wsStatusSchema } from "../validators/message";
 import { createClient, RedisClientType } from "redis";
 import cookie from "cookie";
 interface onlineUser {
@@ -9,6 +9,7 @@ interface onlineUser {
 
 enum MessageType {
     MESSAGE = "message",
+    STATUS = "status"
 }
 
 export class SocketWs {
@@ -54,33 +55,38 @@ export class SocketWs {
 
 
                 //TODO: upgrade this with the jwt token and to remove the from user id
-                // ws.send("user connected");
-                // ws.send("user connected");
-                // ws.send("user connected");
-                // setInterval(()=>{
-                //     ws.send("user connected");
-                // },2000);
+               
 
 
                 ws.on("message", (message) => {
-                    console.log(message.toString());
-                    const data = JSON.parse(message.toString());
-                    const messageData = wsMessageSchema.safeParse(data);
 
+                    const data = JSON.parse(message.toString());
+
+                    const messageData = wsMessageSchema.safeParse(data);
+                    const statusData = wsStatusSchema.safeParse(data);
+
+                    // this is for the message data
                     if (
                         messageData.success &&
                         messageData.data.type === MessageType.MESSAGE
                     ) {
 
                         this.publisher.publish(MessageType.MESSAGE, JSON.stringify(messageData.data));
-                        // console.log(`Received: ${message}`);
-                        // for (let i = 0; i < this.onlineUsers.length; i++) {
-                        //     if(this.onlineUsers[i].userId==messageData.data.data.toUserId){
-                        //         // this.onlineUsers[i].WebSocket.send(`Server received: ${message}`);
-                        //     }
-                        // }
+                       
 
-                    } else {
+                    }
+                    else {
+                        console.error("validation error", messageData?.error?.format());
+                    }
+                
+                    // This is for the status data
+                    if(
+                        statusData.success &&
+                        statusData.data.type === MessageType.STATUS
+                    ){
+                        this.publisher.publish(MessageType.STATUS, JSON.stringify(statusData.data));
+                    }
+                    else{
                         console.error("validation error", messageData?.error?.format());
                     }
                 });
@@ -113,8 +119,36 @@ export class SocketWs {
                 }
             }
         });
-    }
-    sendMessage() {
 
+        await this.subscriber.subscribe(MessageType.STATUS, message => {
+
+            let data = JSON.parse(message);
+            const statusData = wsStatusSchema.safeParse(data);
+
+            if (statusData.success) {
+
+                const socketInstances = this.onlineUsers[statusData.data.data.userId];
+                const result=this.findOnlineUsers(Number(statusData.data.data.friendUserId));
+                if (socketInstances && socketInstances.length >= 1) {
+                    
+                    socketInstances.forEach((socketInstance) => {
+
+                        
+                        socketInstance.send(`${result}`);
+
+                    });
+
+                }
+            }
+        });
+    }
+   
+    findOnlineUsers(userId:number):boolean{
+        if(userId in this.onlineUsers){
+            return true;
+        }
+        else{
+            return false;
+        }
     }
 }

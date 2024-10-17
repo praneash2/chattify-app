@@ -5,6 +5,8 @@ interface Message{
     from:number; 
     to:number;
     message:string;
+    createdAt:Date;
+    updatedAt:Date;
 }
 
 interface getMessagesResult{
@@ -31,8 +33,12 @@ export class MessagesService{
             if(validUsers.result===""){
                 const sentMessages=await this.messagesRepository.getMessages(fromUserId,toUserId);
                 const receivedMessages=await this.messagesRepository.getMessages(toUserId,fromUserId);
-            
-                return {messages:[...sentMessages,...receivedMessages],result:"messages fetched successfully"};
+                
+                let messages=[...sentMessages,...receivedMessages];
+
+                messages.sort((a, b) =>  new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime());
+
+                return {messages:messages,result:"messages fetched successfully"};
             }
             return validUsers;
             

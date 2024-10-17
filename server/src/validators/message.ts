@@ -4,7 +4,16 @@ export const wsMessageSchema=z.object({
     type:z.string(),
     data:z.object({
         message:z.string(),
-        toUserId:z.string()
+        toUserId:z.string().regex(/^[0-9]+$/,{message: 'Please enter valid  user id '}).min(1,{message:"user id must have minimum lenght of 1"}),
+        fromUserId:z.string().regex(/^[0-9]+$/,{message: 'Please enter valid  user id '}).min(1,{message:"user id must have minimum lenght of 1"}),
+    })
+});
+
+export const wsStatusSchema=z.object({
+    type:z.string(),
+    data:z.object({
+        userId:z.string().regex(/^[0-9]+$/,{message: 'Please enter valid  user id '}).min(1,{message:"user id must have minimum lenght of 1"}),
+        friendUserId:z.string().regex(/^[0-9]+$/,{message: 'Please enter valid  user id '}).min(1,{message:"user id must have minimum lenght of 1"})
     })
 });
 

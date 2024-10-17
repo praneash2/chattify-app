@@ -20,6 +20,7 @@ const cookie_1 = __importDefault(require("cookie"));
 var MessageType;
 (function (MessageType) {
     MessageType["MESSAGE"] = "message";
+    MessageType["STATUS"] = "status";
 })(MessageType || (MessageType = {}));
 class SocketWs {
     constructor(server) {
@@ -49,29 +50,26 @@ class SocketWs {
                         }
                     }
                     //TODO: upgrade this with the jwt token and to remove the from user id
-                    // ws.send("user connected");
-                    // ws.send("user connected");
-                    // ws.send("user connected");
-                    // setInterval(()=>{
-                    //     ws.send("user connected");
-                    // },2000);
                     ws.on("message", (message) => {
-                        var _a;
-                        console.log(message.toString());
+                        var _a, _b;
                         const data = JSON.parse(message.toString());
                         const messageData = message_1.wsMessageSchema.safeParse(data);
+                        const statusData = message_1.wsStatusSchema.safeParse(data);
+                        // this is for the message data
                         if (messageData.success &&
                             messageData.data.type === MessageType.MESSAGE) {
                             this.publisher.publish(MessageType.MESSAGE, JSON.stringify(messageData.data));
-                            // console.log(`Received: ${message}`);
-                            // for (let i = 0; i < this.onlineUsers.length; i++) {
-                            //     if(this.onlineUsers[i].userId==messageData.data.data.toUserId){
-                            //         // this.onlineUsers[i].WebSocket.send(`Server received: ${message}`);
-                            //     }
-                            // }
                         }
                         else {
                             console.error("validation error", (_a = messageData === null || messageData === void 0 ? void 0 : messageData.error) === null || _a === void 0 ? void 0 : _a.format());
+                        }
+                        // This is for the status data
+                        if (statusData.success &&
+                            statusData.data.type === MessageType.STATUS) {
+                            this.publisher.publish(MessageType.STATUS, JSON.stringify(statusData.data));
+                        }
+                        else {
+                            console.error("validation error", (_b = messageData === null || messageData === void 0 ? void 0 : messageData.error) === null || _b === void 0 ? void 0 : _b.format());
                         }
                     });
                 }
@@ -95,9 +93,28 @@ class SocketWs {
                     }
                 }
             });
+            yield this.subscriber.subscribe(MessageType.STATUS, message => {
+                let data = JSON.parse(message);
+                const statusData = message_1.wsStatusSchema.safeParse(data);
+                if (statusData.success) {
+                    const socketInstances = this.onlineUsers[statusData.data.data.userId];
+                    const result = this.findOnlineUsers(Number(statusData.data.data.friendUserId));
+                    if (socketInstances && socketInstances.length >= 1) {
+                        socketInstances.forEach((socketInstance) => {
+                            socketInstance.send(`${result}`);
+                        });
+                    }
+                }
+            });
         });
     }
-    sendMessage() {
+    findOnlineUsers(userId) {
+        if (userId in this.onlineUsers) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
 exports.SocketWs = SocketWs;

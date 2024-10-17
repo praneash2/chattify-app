@@ -22,6 +22,7 @@ export const sendMessagePost=async(data:Message)=>{
     try {
         const message= await axios.post('http://localhost:5000/message',data,{withCredentials: true});
         console.log(message);
+        return message;
     } catch (error) {
         console.error(error);
     }

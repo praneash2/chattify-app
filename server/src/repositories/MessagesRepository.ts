@@ -6,6 +6,8 @@ interface Message{
     from:number; 
     to:number;
     message:string;
+    createdAt:Date;
+    updatedAt:Date;
 }
 
 export class MessagesRepository{
