@@ -23,7 +23,8 @@ export default function MessageBox() {
     const scrollElement =useRef<HTMLDivElement>(null);
     const [messages,setMessages]= useState<Message[]>([]);
     const [currentUserId,setCurrentUserId]=useRecoilState<CookieValueTypes>(currentUserIdAtom);
-   
+    
+    console.log(messages);
     useEffect(
         ()=>{
             
@@ -35,7 +36,8 @@ export default function MessageBox() {
             socket.onmessage=(event)=>{
                 // console.log(event.data);
                 let messageReceived=JSON.parse(event.data).data?.message;
-                setMessages([...messages,{from:Number(currentUserId),to:toUserId, message:messageReceived}]);
+                //TODO: refactor this from and to in future
+                setMessages([...messages,{from:toUserId,to:Number(currentUserId), message:messageReceived}]);
             }
             socket.onclose = () => {
                 
@@ -78,6 +80,7 @@ export default function MessageBox() {
         
     },[getCookie('userid')]);
 
+    
     const sendMessage=async (e:React.MouseEvent<HTMLButtonElement>|React.KeyboardEvent<HTMLInputElement>)=>{
         if (e.type === 'click' || ((e.type === 'keydown' )&&((e as React.KeyboardEvent).key==="Enter"))) {
             setMessages([...messages,{from:Number(currentUserId),to:toUserId ,message:inputMessage}]);

@@ -65,35 +65,45 @@ export class SocketWs {
                     const statusData = wsStatusSchema.safeParse(data);
 
                     // this is for the message data
+                    
                     if (
-                        messageData.success &&
-                        messageData.data.type === MessageType.MESSAGE
+                        messageData.success 
                     ) {
-
-                        this.publisher.publish(MessageType.MESSAGE, JSON.stringify(messageData.data));
-                       
+                        if(messageData.success &&
+                            messageData.data.type === MessageType.MESSAGE
+                        ){
+                            this.publisher.publish(MessageType.MESSAGE, JSON.stringify(messageData.data));
+                        }
+                        else{
+                            console.error("validation error", messageData?.error);
+                        }     
 
                     }
                     else {
-                        console.error("validation error", messageData?.error?.format());
+                        if(
+                            statusData.success &&
+                            statusData.data.type === MessageType.STATUS
+                        ){
+                            this.publisher.publish(MessageType.STATUS, JSON.stringify(statusData.data));
+                        }
+                        else{
+                            console.error("validation error", statusData?.error);
+                        }
                     }
                 
                     // This is for the status data
-                    if(
-                        statusData.success &&
-                        statusData.data.type === MessageType.STATUS
-                    ){
-                        this.publisher.publish(MessageType.STATUS, JSON.stringify(statusData.data));
-                    }
-                    else{
-                        console.error("validation error", messageData?.error?.format());
-                    }
+                   
                 });
             }
             catch (e) {
                 console.error(e);
             }
 
+        });
+
+        this.wss.on('close', (code:number, reason:string) => {
+            console.log(`Connection closed: ${code} ${reason}`);
+            // Handle disconnection logic here TODO 
         });
     }
 

@@ -51,32 +51,39 @@ class SocketWs {
                     }
                     //TODO: upgrade this with the jwt token and to remove the from user id
                     ws.on("message", (message) => {
-                        var _a, _b;
                         const data = JSON.parse(message.toString());
                         const messageData = message_1.wsMessageSchema.safeParse(data);
                         const statusData = message_1.wsStatusSchema.safeParse(data);
                         // this is for the message data
-                        if (messageData.success &&
-                            messageData.data.type === MessageType.MESSAGE) {
-                            this.publisher.publish(MessageType.MESSAGE, JSON.stringify(messageData.data));
+                        if (messageData.success) {
+                            if (messageData.success &&
+                                messageData.data.type === MessageType.MESSAGE) {
+                                this.publisher.publish(MessageType.MESSAGE, JSON.stringify(messageData.data));
+                            }
+                            else {
+                                console.error("validation error", messageData === null || messageData === void 0 ? void 0 : messageData.error);
+                            }
                         }
                         else {
-                            console.error("validation error", (_a = messageData === null || messageData === void 0 ? void 0 : messageData.error) === null || _a === void 0 ? void 0 : _a.format());
+                            if (statusData.success &&
+                                statusData.data.type === MessageType.STATUS) {
+                                this.publisher.publish(MessageType.STATUS, JSON.stringify(statusData.data));
+                            }
+                            else {
+                                console.error("validation error", statusData === null || statusData === void 0 ? void 0 : statusData.error);
+                            }
                         }
                         // This is for the status data
-                        if (statusData.success &&
-                            statusData.data.type === MessageType.STATUS) {
-                            this.publisher.publish(MessageType.STATUS, JSON.stringify(statusData.data));
-                        }
-                        else {
-                            console.error("validation error", (_b = messageData === null || messageData === void 0 ? void 0 : messageData.error) === null || _b === void 0 ? void 0 : _b.format());
-                        }
                     });
                 }
                 catch (e) {
                     console.error(e);
                 }
             }));
+            this.wss.on('close', (code, reason) => {
+                console.log(`Connection closed: ${code} ${reason}`);
+                // Handle disconnection logic here TODO 
+            });
         });
     }
     initSubscriber() {
