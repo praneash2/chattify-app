@@ -101,7 +101,7 @@ class SocketWs {
                     const result = this.findOnlineUsers(Number(statusData.data.data.friendUserId));
                     if (socketInstances && socketInstances.length >= 1) {
                         socketInstances.forEach((socketInstance) => {
-                            socketInstance.send(`${result}`);
+                            socketInstance.send(JSON.stringify({ onlineUserId: statusData.data.data.friendUserId, result }));
                         });
                     }
                 }

@@ -57,7 +57,6 @@ export class SocketWs {
                 //TODO: upgrade this with the jwt token and to remove the from user id
                
 
-
                 ws.on("message", (message) => {
 
                     const data = JSON.parse(message.toString());
@@ -129,12 +128,13 @@ export class SocketWs {
 
                 const socketInstances = this.onlineUsers[statusData.data.data.userId];
                 const result=this.findOnlineUsers(Number(statusData.data.data.friendUserId));
+    
                 if (socketInstances && socketInstances.length >= 1) {
                     
                     socketInstances.forEach((socketInstance) => {
 
                         
-                        socketInstance.send(`${result}`);
+                        socketInstance.send(JSON.stringify({onlineUserId:statusData.data.data.friendUserId,result}));
 
                     });
 

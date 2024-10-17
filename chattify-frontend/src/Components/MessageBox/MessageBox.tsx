@@ -33,7 +33,8 @@ export default function MessageBox() {
             }
 
             socket.onmessage=(event)=>{
-                let messageReceived=JSON.parse(event.data).data.message;
+                // console.log(event.data);
+                let messageReceived=JSON.parse(event.data).data?.message;
                 setMessages([...messages,{from:Number(currentUserId),to:toUserId, message:messageReceived}]);
             }
             socket.onclose = () => {
@@ -48,13 +49,24 @@ export default function MessageBox() {
             if (scrollElement.current ) {
                 scrollElement.current.scrollTop = scrollElement.current.scrollHeight;
               }
+
+          
+
         }
     );
-
+    
+   
     useEffect(()=>{
         setMessages([]);
         
         (async()=>{
+            socket.send(JSON.stringify({
+                "type":"status",
+                "data":{
+                    "userId":`${currentUserId}`,
+                    "friendUserId":`${Number(toUserId)}`
+                }
+            }));
             const data=await getAllMessages(Number(currentUserId),toUserId);
             setMessages(data);
         })()
@@ -100,7 +112,7 @@ export default function MessageBox() {
             <div className='h-[100vh] w-[80vw]'>
                 <MessageHeader ></MessageHeader>
                 <div ref={scrollElement} className=' flex p-10 flex-col gap-2 h-[85%] border-[1px] border-gray-200  overflow-y-scroll'>
-                    {messages.map((message,index)=>(
+                    {messages?.map((message,index)=>(
                         (message.from===Number(currentUserId))?<div key={index} className='self-end px-4 py-1 bg-violet-600 rounded-md'>{message.message}</div>:<div key={index} className='self-start px-4 py-1 bg-slate-100 rounded-md'>{message.message}</div>
                     ))
                     }
