@@ -24,7 +24,6 @@ export default function MessageBox() {
     const [messages,setMessages]= useState<Message[]>([]);
     const [currentUserId,setCurrentUserId]=useRecoilState<CookieValueTypes>(currentUserIdAtom);
     
-    console.log(messages);
     useEffect(
         ()=>{
             
@@ -56,7 +55,7 @@ export default function MessageBox() {
 
         }
     );
-    
+   
    
     useEffect(()=>{
         setMessages([]);

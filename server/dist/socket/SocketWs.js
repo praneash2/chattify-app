@@ -75,15 +75,22 @@ class SocketWs {
                         }
                         // This is for the status data
                     });
+                    ws.on("close", (code, result) => {
+                        //TODO: do this using the pub sub
+                        console.log('disconnected', cookies.userid);
+                        let socketInstances = this.onlineUsers[cookies.userid];
+                        // console.log(socketInstances);
+                        socketInstances = socketInstances.filter((instance) => instance !== ws);
+                        if (socketInstances.length === 0) {
+                            delete this.onlineUsers[cookies.userid];
+                        }
+                        console.log(Object.keys(this.onlineUsers));
+                    });
                 }
                 catch (e) {
                     console.error(e);
                 }
             }));
-            this.wss.on('close', (code, reason) => {
-                console.log(`Connection closed: ${code} ${reason}`);
-                // Handle disconnection logic here TODO 
-            });
         });
     }
     initSubscriber() {
