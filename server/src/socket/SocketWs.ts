@@ -4,12 +4,17 @@ import { wsMessageSchema, wsStatusSchema } from "../validators/message";
 import { createClient, RedisClientType } from "redis";
 import cookie from "cookie";
 interface onlineUser {
-    [key: string]: WebSocket[];
+    [key: string]: CustomWebSocket[];
+}
+
+interface CustomWebSocket extends WebSocket{
+    id?:string;
 }
 
 enum MessageType {
     MESSAGE = "message",
-    STATUS = "status"
+    STATUS = "status",
+    DISCONNECT ="disconnect"
 }
 
 export class SocketWs {
@@ -33,14 +38,17 @@ export class SocketWs {
         await this.subscriber.connect();
         await this.publisher.connect();
 
-        this.wss.on("connection", async (ws: WebSocket, req) => {
+        this.wss.on("connection", async (ws: CustomWebSocket, req) => {
             try {
                 const cookies = cookie.parse(req.headers.cookie || '');
                 console.log("cookie", cookies);
+                
                 if (typeof cookies.userid === "string") {
 
                     // const onlineUser = { userId: , WebSocket: ws };
                     let userId = cookies.userid;
+                    //TODO: this will work for single instance for multiple instace for a single user also append something 
+                    ws.id=userId;
                     if (userId in this.onlineUsers) {
 
                         this.onlineUsers[userId].push(ws);
@@ -96,16 +104,19 @@ export class SocketWs {
                 });
                 
                 ws.on("close", (code,result)=>{
-                    //TODO: do this using the pub sub
-                    console.log('disconnected',cookies.userid);
-                    
-                    let socketInstances=this.onlineUsers[cookies.userid];
-                    // console.log(socketInstances);
-                    socketInstances=socketInstances.filter((instance)=>instance!==ws);
-                    if(socketInstances.length===0){
-                        delete this.onlineUsers[cookies.userid];
+                    try {
+                         //TODO: do this using the pub sub
+                        console.log('disconnected',cookies.userid);
+                        
+                        const data={userId:cookies.userid,wsInstance:ws};
+                        console.log(ws.url);
+                        this.publisher.publish(MessageType.DISCONNECT, JSON.stringify(data));
+                       
+                        
+                    } catch (error:any) {
+                        console.log(error.message);   
                     }
-                    console.log(Object.keys(this.onlineUsers));
+                   
                   });
             }
             catch (e) {
@@ -149,7 +160,7 @@ export class SocketWs {
 
                 const socketInstances = this.onlineUsers[statusData.data.data.userId];
                 const result=this.findOnlineUsers(Number(statusData.data.data.friendUserId));
-    
+                
                 if (socketInstances && socketInstances.length >= 1) {
                     
                     socketInstances.forEach((socketInstance) => {
@@ -162,6 +173,26 @@ export class SocketWs {
                 }
             }
         });
+
+        await this.subscriber.subscribe(MessageType.DISCONNECT, message => {
+            let data = JSON.parse(message);
+            //TODO: validated this useing zod in future
+            if(data?.userId in this.onlineUsers){
+                console.log("disconnected"); 
+                let socketInstances=this.onlineUsers[data?.userId];
+                
+                console.log("before",socketInstances.length);
+                socketInstances=socketInstances?.filter((instance)=>instance.id!==data?.wsInstance.id);
+                console.log("after",socketInstances.length);
+
+                if(socketInstances.length===0){     
+                    delete this.onlineUsers[data?.userId];
+                }
+                console.log(Object.keys(this.onlineUsers));
+            }
+            
+        });
+
     }
    
     findOnlineUsers(userId:number):boolean{

@@ -21,6 +21,7 @@ var MessageType;
 (function (MessageType) {
     MessageType["MESSAGE"] = "message";
     MessageType["STATUS"] = "status";
+    MessageType["DISCONNECT"] = "disconnect";
 })(MessageType || (MessageType = {}));
 class SocketWs {
     constructor(server) {
@@ -42,6 +43,8 @@ class SocketWs {
                     if (typeof cookies.userid === "string") {
                         // const onlineUser = { userId: , WebSocket: ws };
                         let userId = cookies.userid;
+                        //TODO: this will work for single instance for multiple instace for a single user also append something 
+                        ws.id = userId;
                         if (userId in this.onlineUsers) {
                             this.onlineUsers[userId].push(ws);
                         }
@@ -76,15 +79,16 @@ class SocketWs {
                         // This is for the status data
                     });
                     ws.on("close", (code, result) => {
-                        //TODO: do this using the pub sub
-                        console.log('disconnected', cookies.userid);
-                        let socketInstances = this.onlineUsers[cookies.userid];
-                        // console.log(socketInstances);
-                        socketInstances = socketInstances.filter((instance) => instance !== ws);
-                        if (socketInstances.length === 0) {
-                            delete this.onlineUsers[cookies.userid];
+                        try {
+                            //TODO: do this using the pub sub
+                            console.log('disconnected', cookies.userid);
+                            const data = { userId: cookies.userid, wsInstance: ws };
+                            console.log(ws.url);
+                            this.publisher.publish(MessageType.DISCONNECT, JSON.stringify(data));
                         }
-                        console.log(Object.keys(this.onlineUsers));
+                        catch (error) {
+                            console.log(error.message);
+                        }
                     });
                 }
                 catch (e) {
@@ -118,6 +122,21 @@ class SocketWs {
                             socketInstance.send(JSON.stringify({ onlineUserId: statusData.data.data.friendUserId, result }));
                         });
                     }
+                }
+            });
+            yield this.subscriber.subscribe(MessageType.DISCONNECT, message => {
+                let data = JSON.parse(message);
+                //TODO: validated this useing zod in future
+                if ((data === null || data === void 0 ? void 0 : data.userId) in this.onlineUsers) {
+                    console.log("disconnected");
+                    let socketInstances = this.onlineUsers[data === null || data === void 0 ? void 0 : data.userId];
+                    console.log("before", socketInstances.length);
+                    socketInstances = socketInstances === null || socketInstances === void 0 ? void 0 : socketInstances.filter((instance) => instance.id !== (data === null || data === void 0 ? void 0 : data.wsInstance.id));
+                    console.log("after", socketInstances.length);
+                    if (socketInstances.length === 0) {
+                        delete this.onlineUsers[data === null || data === void 0 ? void 0 : data.userId];
+                    }
+                    console.log(Object.keys(this.onlineUsers));
                 }
             });
         });

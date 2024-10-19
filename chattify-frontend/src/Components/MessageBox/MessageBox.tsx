@@ -34,9 +34,11 @@ export default function MessageBox() {
 
             socket.onmessage=(event)=>{
                 // console.log(event.data);
-                let messageReceived=JSON.parse(event.data).data?.message;
-                //TODO: refactor this from and to in future
-                setMessages([...messages,{from:toUserId,to:Number(currentUserId), message:messageReceived}]);
+                if(toUserId){
+                    let messageReceived=JSON.parse(event.data).data?.message;
+                    //TODO: refactor this from and to in future
+                    setMessages([...messages,{from:toUserId,to:Number(currentUserId), message:messageReceived}]);
+                }
             }
             socket.onclose = () => {
                 
@@ -61,16 +63,20 @@ export default function MessageBox() {
         setMessages([]);
         
         (async()=>{
-            socket.send(JSON.stringify({
-                "type":"status",
-                "data":{
-                    "userId":`${currentUserId}`,
-                    "friendUserId":`${Number(toUserId)}`
-                }
-            }));
-            const data=await getAllMessages(Number(currentUserId),toUserId);
-            setMessages(data);
+            if(socket){
+                socket.send(JSON.stringify({
+                    "type":"status",
+                    "data":{
+                        "userId":`${currentUserId}`,
+                        "friendUserId":`${Number(toUserId)}`
+                    }
+                }));
+
+                const data=await getAllMessages(Number(currentUserId),toUserId);
+                setMessages(data);
+            }   
         })()
+        
     },[toUserId,getCookie('userid')]);
 
     useEffect(()=>{
@@ -83,7 +89,7 @@ export default function MessageBox() {
     const sendMessage=async (e:React.MouseEvent<HTMLButtonElement>|React.KeyboardEvent<HTMLInputElement>)=>{
         if (e.type === 'click' || ((e.type === 'keydown' )&&((e as React.KeyboardEvent).key==="Enter"))) {
             setMessages([...messages,{from:Number(currentUserId),to:toUserId ,message:inputMessage}]);
-            if(toUserId){
+            if(toUserId && socket){
                 socket.send(JSON.stringify({
                     "type":"message",
                     "data":{
