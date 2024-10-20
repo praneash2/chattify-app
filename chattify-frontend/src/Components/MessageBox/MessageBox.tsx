@@ -13,7 +13,7 @@ import MessageHeader from '../MessageHeader/MessageHeader';
 interface Message{
     from:number;
     to:number;
-    message:string
+    message:string;
 }
 
 export default function MessageBox() {
