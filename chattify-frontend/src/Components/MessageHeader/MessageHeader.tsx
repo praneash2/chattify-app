@@ -5,7 +5,11 @@ import { socketAtom } from '@/recoil/atoms/socketAtom';
 import { useRecoilValue } from 'recoil';
 import { currentUserAtom } from '@/recoil/atoms/currentUserAtom';
 
-export default function MessageHeader() {
+interface MessageHeaderProps{
+    changeFlag: boolean;
+}
+
+export default function MessageHeader({changeFlag}:MessageHeaderProps) {
     const socket =useRecoilValue(socketAtom);
     const toUserId = useRecoilValue(currentUserAtom);
     const [isOnline,setIsOnline] = useState(false);
@@ -13,7 +17,8 @@ export default function MessageHeader() {
     useEffect(()=>{
         const messageHandler = (event:MessageEvent<any>) => {
             const statusData=JSON.parse(event.data);
-            console.log(statusData);
+            console.log("statusData");
+            // alert();
             if(Number(statusData?.onlineUserId)===toUserId && statusData.result===true){
                 setIsOnline(true);
             }else{
@@ -31,8 +36,8 @@ export default function MessageHeader() {
                 socket.removeEventListener('message', messageHandler);
             }
         };
-    },[toUserId]);
-
+    },[toUserId,changeFlag]);
+    //TODO: change the online state if the friends online state is changed
   return (
     <div className='border-l-[1px] border-gray-200 h-[10%]'>
         <StatusIndicator online={isOnline}>

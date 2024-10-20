@@ -80,7 +80,6 @@ class SocketWs {
                     });
                     ws.on("close", (code, result) => {
                         try {
-                            //TODO: do this using the pub sub
                             console.log('disconnected', cookies.userid);
                             const data = { userId: cookies.userid, wsInstance: ws };
                             console.log(ws.url);

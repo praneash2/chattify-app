@@ -23,6 +23,7 @@ export default function MessageBox() {
     const scrollElement =useRef<HTMLDivElement>(null);
     const [messages,setMessages]= useState<Message[]>([]);
     const [currentUserId,setCurrentUserId]=useRecoilState<CookieValueTypes>(currentUserIdAtom);
+    const [changeFlag,setChangeFlag] = useState(false);
     
     useEffect(
         ()=>{
@@ -35,10 +36,20 @@ export default function MessageBox() {
             socket.onmessage=(event)=>{
                 // console.log(event.data);
                 if(toUserId){
-                    let messageReceived=JSON.parse(event.data).data?.message;
-                    //TODO: refactor this from and to in future
-                    setMessages([...messages,{from:toUserId,to:Number(currentUserId), message:messageReceived}]);
+                    const dataReceived=JSON.parse(event.data);
+                    if(dataReceived?.type==="message"){
+                        const messageReceived=dataReceived?.data?.message;
+                        console.log("yes",messageReceived);
+                        setChangeFlag(!changeFlag);
+                        //TODO: refactor this from and to in future
+                        setMessages([...messages,{from:toUserId,to:Number(currentUserId), message:messageReceived}]);  
+                    }
+                   
+                   
                 }
+                
+
+                
             }
             socket.onclose = () => {
                 
@@ -60,7 +71,7 @@ export default function MessageBox() {
    
    
     useEffect(()=>{
-        setMessages([]);
+        
         
         (async()=>{
             if(socket){
@@ -72,11 +83,18 @@ export default function MessageBox() {
                     }
                 }));
 
-                const data=await getAllMessages(Number(currentUserId),toUserId);
-                setMessages(data);
+                
             }   
         })()
         
+    },[toUserId,getCookie('userid'),changeFlag]);
+
+    useEffect(()=>{
+        setMessages([]);
+        (async()=>{
+        const data=await getAllMessages(Number(currentUserId),toUserId);
+        setMessages(data);
+        })();
     },[toUserId,getCookie('userid')]);
 
     useEffect(()=>{
@@ -98,10 +116,11 @@ export default function MessageBox() {
                          "fromUserId":`${Number(currentUserId)}`
                     }
                 }));
+                setChangeFlag(!changeFlag);
                 const sendedMessageResult=await sendMessagePost({from:Number(currentUserId),to:toUserId ,message:inputMessage});
                 if(sendedMessageResult?.status===200){
                     //TODO: handle this in the future for message not saved
-                    console.log("message not saved");
+                    console.log("message sent");
                 }
                 setInputMessage('');
             }
@@ -118,7 +137,7 @@ export default function MessageBox() {
             <Navbar></Navbar>
             <FriendsList></FriendsList>
             <div className='h-[100vh] w-[80vw]'>
-                <MessageHeader ></MessageHeader>
+                <MessageHeader changeFlag={changeFlag} ></MessageHeader>
                 <div ref={scrollElement} className=' flex p-10 flex-col gap-2 h-[85%] border-[1px] border-gray-200  overflow-y-scroll'>
                     {messages?.map((message,index)=>(
                         (message.from===Number(currentUserId))?<div key={index} className='self-end px-4 py-1 bg-violet-600 rounded-md'>{message.message}</div>:<div key={index} className='self-start px-4 py-1 bg-slate-100 rounded-md'>{message.message}</div>

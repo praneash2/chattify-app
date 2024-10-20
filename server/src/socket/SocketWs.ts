@@ -105,13 +105,13 @@ export class SocketWs {
                 
                 ws.on("close", (code,result)=>{
                     try {
-                         //TODO: do this using the pub sub
+                         
                         console.log('disconnected',cookies.userid);
                         
                         const data={userId:cookies.userid,wsInstance:ws};
                         console.log(ws.url);
                         this.publisher.publish(MessageType.DISCONNECT, JSON.stringify(data));
-                       
+                        
                         
                     } catch (error:any) {
                         console.log(error.message);   
