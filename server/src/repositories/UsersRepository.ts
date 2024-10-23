@@ -22,7 +22,7 @@ export class UsersRepository{
         this.prisma=new PrismaClient();
     }
 
-    getUser=async(userId:number)=>{
+    getUser=async(userId:number):Promise<userResult|null>=>{
         try {
         
             const userData=await this.prisma.user.findUnique({
@@ -30,7 +30,7 @@ export class UsersRepository{
                   id: userId,
                 },
               });
-              return userData;
+              return userData; //gettin ts error here
         } catch (error) {
             throw(error)
         }

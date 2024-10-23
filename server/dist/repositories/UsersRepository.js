@@ -20,7 +20,7 @@ class UsersRepository {
                         id: userId,
                     },
                 });
-                return userData;
+                return userData; //gettin ts error here
             }
             catch (error) {
                 throw (error);

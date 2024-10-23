@@ -1,4 +1,5 @@
 import { UsersRepository } from "../../repositories/UsersRepository";
+import jwt from 'jsonwebtoken';
 interface User{
     name:string,
     email:string,
@@ -12,6 +13,7 @@ interface userResult {
     password?: string;
 }
 
+
 interface result{
     result:string
 }
@@ -23,9 +25,12 @@ export class UsersService{
         this.usersRepository = new UsersRepository();
     }
 
-    getUser=async(userId:number)=>{
+    getUser=async(userId:number):Promise<userResult|null>=>{
         try {
             const data= await this.usersRepository.getUser(userId);
+            jwt.sign({
+                data: userId
+              }, 'secret', { expiresIn: '1h' });
             return data;
         } catch (error) {
             throw(error)
