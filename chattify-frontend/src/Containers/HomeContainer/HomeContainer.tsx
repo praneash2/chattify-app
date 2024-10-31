@@ -2,8 +2,10 @@
 import {RecoilRoot} from 'recoil';
 import React from 'react'
 import MessageBox from '@/Components/MessageBox/MessageBox';
+import isAuth from "@/CustomHooks/isAuth";
 
-export default function HomeContainer() {
+const HomeContainer = () => {
+
   return (
     <RecoilRoot>
         <div>
@@ -15,3 +17,5 @@ export default function HomeContainer() {
     
   )
 }
+
+export default isAuth(HomeContainer);

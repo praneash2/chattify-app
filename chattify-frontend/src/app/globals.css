@@ -31,3 +31,7 @@ body {
   padding: 0;
   box-sizing: border-box;
 }
+
+.auth{
+  background-color: red;
+}
