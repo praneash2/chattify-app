@@ -18,4 +18,4 @@ const HomeContainer = () => {
   )
 }
 
-export default isAuth(HomeContainer);
+export default (HomeContainer);

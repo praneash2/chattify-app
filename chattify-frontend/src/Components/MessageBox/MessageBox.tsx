@@ -72,10 +72,9 @@ export default function MessageBox() {
    
     useEffect(()=>{
         
-        
         (async()=>{
-            if(socket){
-                socket.send(JSON.stringify({
+            if(socket && socket?.readyState){
+                socket?.send(JSON.stringify({
                     "type":"status",
                     "data":{
                         "userId":`${currentUserId}`,
