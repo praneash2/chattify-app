@@ -9,6 +9,7 @@ export default function isAuth(Component: any) {
     const auth = isAuthenticated();
 
     useEffect(() => {
+      
       if (!auth) {
         return redirect("/auth");
       }
