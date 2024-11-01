@@ -1,6 +1,8 @@
+"use client"
 import HomeContainer from "@/Containers/HomeContainer/HomeContainer";
 
-export default function Home() {
+
+const Home = () => {
   return (
     
       <div className="flex items-center min-h-[100vh]">
@@ -9,3 +11,5 @@ export default function Home() {
 
   );
 }
+
+export default (Home);

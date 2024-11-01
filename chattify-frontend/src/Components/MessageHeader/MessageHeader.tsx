@@ -4,12 +4,13 @@ import StatusIndicator from '../StatusIndicator/StatusIndicator'
 import { socketAtom } from '@/recoil/atoms/socketAtom';
 import { useRecoilValue } from 'recoil';
 import { currentUserAtom } from '@/recoil/atoms/currentUserAtom';
+import isAuth from '@/CustomHooks/isAuth';
 
 interface MessageHeaderProps{
     changeFlag: boolean;
 }
 
-export default function MessageHeader({changeFlag}:MessageHeaderProps) {
+const MessageHeader=({changeFlag}:MessageHeaderProps) =>{
     const socket =useRecoilValue(socketAtom);
     const toUserId = useRecoilValue(currentUserAtom);
     const [isOnline,setIsOnline] = useState(false);
@@ -46,3 +47,5 @@ export default function MessageHeader({changeFlag}:MessageHeaderProps) {
     </div>
   )
 }
+
+export default  MessageHeader;

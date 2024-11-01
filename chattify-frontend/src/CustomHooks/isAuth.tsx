@@ -1,25 +1,32 @@
 "use client";
-import {isAuthenticated} from "@/utils/authentication";
-import { useEffect } from "react";
-import { redirect } from "next/navigation";
+import { isAuthenticated } from "@/utils/authentication";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
-
-export default function isAuth(Component: any) {
-  return function IsAuth(props: any) {
-    const auth = isAuthenticated();
+export default function isAuth(Component:any) {
+  return function IsAuth(props:any) {
+    const [auth, setAuth] = useState<boolean>(false); 
+    const router = useRouter();
 
     useEffect(() => {
-      
-      if (!auth) {
-        return redirect("/auth");
-      }
-    }, []);
+      const checkAuth = async () => {
+        const result = await isAuthenticated(); 
+        if (!result) {
+          router.push("/auth"); 
+        } else {
+          setAuth(true); 
+        }
+      };
 
+      checkAuth();
+    }, [router]);
 
-    if (!auth) {
+    
+    if (auth === null) {
       return null;
     }
 
+    
     return <Component {...props} />;
   };
 }

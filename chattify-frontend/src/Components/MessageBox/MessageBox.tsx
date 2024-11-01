@@ -9,6 +9,7 @@ import { getAllMessages, sendMessagePost } from '@/api/messages';
 import Navbar from '../Navbar/Navbar';
 import { currentUserIdAtom } from '@/recoil/atoms/currentUserIdAtom';
 import MessageHeader from '../MessageHeader/MessageHeader';
+import isAuth from '@/CustomHooks/isAuth';
 
 interface Message{
     from:number;
@@ -16,7 +17,7 @@ interface Message{
     message:string;
 }
 
-export default function MessageBox() {
+ const MessageBox=()=> {
     const socket =useRecoilValue(socketAtom);
     const [inputMessage,setInputMessage] = useState("");
     const toUserId = useRecoilValue(currentUserAtom);
@@ -151,3 +152,5 @@ export default function MessageBox() {
         </div>
     )
 }
+
+export default (MessageBox);
